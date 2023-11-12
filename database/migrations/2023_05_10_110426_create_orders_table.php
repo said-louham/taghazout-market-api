@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('payment_mode');
             $table->timestamps();
 
-
         });
     }
 
