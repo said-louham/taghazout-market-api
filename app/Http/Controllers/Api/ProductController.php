@@ -2,28 +2,25 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Product;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ProductResource;
-use App\Http\Resources\ProductCollection;
 use Illuminate\Support\Facades\Validator;
-
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public $baseurl = "http://127.0.0.1:8000/";
+    public $baseurl = 'http://127.0.0.1:8000/';
+
     public function index()
     {
         $products = Product::with('Ratings')->latest()->get();
+
         return new ProductCollection($products);
     }
-
 
     public function store(Request $request)
     {
@@ -45,15 +42,15 @@ class ProductController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'validation error',
-                'error' => $validator->errors()
+                'error' => $validator->errors(),
             ]);
         }
 
         $category = Category::find($request->input('category_id'));
-        if (!$category) {
+        if (! $category) {
             return response()->json([
                 'status' => false,
-                'message' => 'Category not found'
+                'message' => 'Category not found',
             ]);
         }
 
@@ -65,43 +62,37 @@ class ProductController extends Controller
             'original_price' => $request->input('original_price'),
             'selling_price' => $request->input('selling_price'),
             'quantity' => $request->input('quantity'),
-            'trending' => $request->input('trending') ? "1" : "0",
-            'featured' => $request->input('featured') ? "1" : "0",
-            'status' => $request->input('status') ? "1" : "0",
+            'trending' => $request->input('trending') ? '1' : '0',
+            'featured' => $request->input('featured') ? '1' : '0',
+            'status' => $request->input('status') ? '1' : '0',
         ]);
-
-
 
         if ($request->hasFile('image')) {
             foreach ($request->file('image') as $key => $imageFile) {
                 $extension = $imageFile->getClientOriginalExtension();
-                $imageName = time() . $key . '.' . $extension;
+                $imageName = time().$key.'.'.$extension;
                 $imageFile->move(public_path('products'), $imageName);
-                $finalImagePathName = $this->baseurl . 'products/' . $imageName;
+                $finalImagePathName = $this->baseurl.'products/'.$imageName;
 
                 $product->ProductImages()->create([
-                    'image' => $finalImagePathName
+                    'image' => $finalImagePathName,
                 ]);
             }
         }
 
-
-
         return response()->json([
             'status' => true,
             'message' => 'Product added successfully',
-            'data' => $product
+            'data' => $product,
         ], 201);
     }
-
-
 
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'category_id' => 'sometimes|exists:categories,id',
-            'name' => 'sometimes|max:255|unique:products,name,' . $id,
-            'slug' => 'sometimes|unique:products,slug,' . $id . '|max:255',
+            'name' => 'sometimes|max:255|unique:products,name,'.$id,
+            'slug' => 'sometimes|unique:products,slug,'.$id.'|max:255',
             'description' => 'sometimes|required',
             'original_price' => 'sometimes|numeric|min:0',
             'selling_price' => 'sometimes|numeric|min:0',
@@ -116,28 +107,28 @@ class ProductController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'validation error',
-                'error' => $validator->errors()
+                'error' => $validator->errors(),
             ]);
         }
 
         $product = Product::find($id);
-        if (!$product) {
+        if (! $product) {
             return response()->json([
                 'status' => false,
-                'message' => 'Product not found with id '.$id
+                'message' => 'Product not found with id '.$id,
             ]);
         }
 
         if ($request->has('category_id')) {
             $category = Category::find($request->input('category_id'));
-            if (!$category) {
+            if (! $category) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Category not found'
+                    'message' => 'Category not found',
                 ]);
             }
         }
-        
+
         $product->name = $request->input('name', $product->name);
         $product->slug = $request->input('slug', $product->slug);
         $product->description = $request->input('description', $product->description);
@@ -157,9 +148,9 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             foreach ($request->file('image') as $key => $imageFile) {
                 $extension = $imageFile->getClientOriginalExtension();
-                $imageName = time() .$key.'.' . $extension;
+                $imageName = time().$key.'.'.$extension;
                 $imageFile->move(public_path('products'), $imageName);
-                $finalImagePathName = $this->baseurl . 'products/' . $imageName;
+                $finalImagePathName = $this->baseurl.'products/'.$imageName;
 
                 $productImage = new ProductImage;
                 $productImage->product_id = $product->id;
@@ -171,89 +162,81 @@ class ProductController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Product updated successfully',
-            'data' => new ProductResource($product)
+            'data' => new ProductResource($product),
         ], 200);
     }
-
-
-
-
 
     public function disroyImage($image_id)
     {
         $productImage = ProductImage::find($image_id);
 
-        if (!$productImage) {
+        if (! $productImage) {
             return response()->json([
                 'status' => false,
-                'message' => 'Product Images not found'
+                'message' => 'Product Images not found',
             ]);
         }
-        if (file_exists(public_path('products') . '/' . basename($productImage->image))) {
-            unlink(public_path('products') . '/' . basename($productImage->image));
+        if (file_exists(public_path('products').'/'.basename($productImage->image))) {
+            unlink(public_path('products').'/'.basename($productImage->image));
         }
         $productImage->delete();
 
         return response()->json([
             'status' => true,
             'message' => 'Product image deleted successfully',
-            'data'=>$productImage
+            'data' => $productImage,
         ], 200);
     }
 
-
-        
-    public function updateProductImage(Request $request, $imageId) {
+    public function updateProductImage(Request $request, $imageId)
+    {
         $productImage = ProductImage::find($imageId);
-    
-        if (!$productImage) {
+
+        if (! $productImage) {
             return response()->json([
                 'status' => false,
-                'message' => 'Product image not found'
+                'message' => 'Product image not found',
             ], 404);
         }
-    
+
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-    
-            if (!$image->isValid()) {
+
+            if (! $image->isValid()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Invalid image file'
+                    'message' => 'Invalid image file',
                 ], 400);
             }
-    
-   
+
             $extension = $request->file('image')->getClientOriginalExtension();
-            $imageName = time(). '.' . $extension;
+            $imageName = time().'.'.$extension;
             $request->file('image')->move(public_path('products'), $imageName);
-            $finalImagePathName = $this->baseurl.'products/'. $imageName;
+            $finalImagePathName = $this->baseurl.'products/'.$imageName;
             $productImage->update([
-                "image"=> $finalImagePathName,
+                'image' => $finalImagePathName,
             ]);
 
             return response()->json([
                 'status' => true,
                 'message' => 'Product image updated successfully',
-                'data' => $productImage
+                'data' => $productImage,
             ]);
         } else {
             return response()->json([
                 'status' => false,
-                'message' => 'Image is required'
+                'message' => 'Image is required',
             ], 400);
         }
     }
 
-
-
     public function destroy($id)
     {
         $product = Product::find($id);
-        if (!$product) {
+        if (! $product) {
             return response()->json([
                 'status' => false,
-                'message' => 'Product not found'
+                'message' => 'Product not found',
             ]);
         }
 
@@ -263,7 +246,7 @@ class ProductController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Product and associated images deleted successfully',
-            'data' => $product
+            'data' => $product,
         ], 200);
     }
 }

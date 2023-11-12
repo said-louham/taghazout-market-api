@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\Product;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Rating extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'user_id',
         'product_id',
@@ -17,19 +17,17 @@ class Rating extends Model
         'comment',
     ];
 
-    /**
-     * Get the user who rated the product.
-     */
-    public function user()
+    protected $casts = [
+        'rating' => 'float',
+    ];
+
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Get the product that was rated.
-     */
-    public function product()
+    public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }

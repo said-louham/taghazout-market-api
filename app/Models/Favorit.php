@@ -2,31 +2,26 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\Product;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Favorit extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'user_id', 'product_id',
+        'user_id',
+        'product_id',
     ];
 
-    /**
-     * Get the user who favorited the product.
-     */
-    public function user()
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Get the product that was favorited.
-     */
-    public function product()
+    public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }

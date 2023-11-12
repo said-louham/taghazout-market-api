@@ -9,7 +9,6 @@ use App\Models\PasswordResetToken;
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -31,7 +30,7 @@ class AuthController extends Controller
         $this->validate(
             $request,
             [
-                'full_name' => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,username'],
+                'full_name' => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,full_name'],
                 'email' => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,email'],
                 'password' => ['bail', 'required', 'string', 'min:6'],
             ]
@@ -63,6 +62,11 @@ class AuthController extends Controller
         $tokenName = config('APP_NAME', 'TOKEN_NAME');
         $expiresAt = app()->isLocal() ? now()->addYear() : now()->addDay();
         $token = $request->user()->createToken($tokenName, ['*'], $expiresAt);
+        ds([
+            'token' => $tokenName,
+            'APP_NAME' => config('APP_NAME'),
+
+        ]);
 
         return response()->json(['token' => $token->plainTextToken], 200);
     }
@@ -149,7 +153,7 @@ class AuthController extends Controller
         $currentPasswordStatus = Hash::check($request->current_password, auth()->user()->password);
         if ($currentPasswordStatus) {
 
-            User::findOrFail(Auth::user()->id)->update([
+            User::findOrFail(auth()->id())->update([
                 'password' => Hash::make($request->password),
             ]);
 
