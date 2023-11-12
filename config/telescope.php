@@ -64,7 +64,6 @@ return [
 
     'enabled' => env('TELESCOPE_ENABLED', true),
 
-
     /*
     |--------------------------------------------------------------------------
     | Telescope Route Middleware
