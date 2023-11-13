@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Cart;
-use App\Models\Product;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
+use App\Models\Cart;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-
     public function index()
     {
         $cartItems = Cart::where('user_id', auth()->id())->with('product')->get();
+
         return CartResource::collection($cartItems);
     }
 
@@ -63,7 +62,6 @@ class CartController extends Controller
         return CartResource::collection($userCart);
     }
 
-
     public function update(Request $request, string $id)
     {
         $quantity = $request->input('quantity', 1);
@@ -72,7 +70,7 @@ class CartController extends Controller
             ->where('id', $id)
             ->first();
 
-        if (!$cartItem) {
+        if (! $cartItem) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Cart item not found',
@@ -98,7 +96,7 @@ class CartController extends Controller
             ->where('id', $id)
             ->first();
 
-        if (!$cartItem) {
+        if (! $cartItem) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Cart item not found',
@@ -110,21 +108,6 @@ class CartController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Product removed from cart',
-        ]);
-    }
-    public function destroyUserCart()
-    {
-        $userCart = Cart::where('user_id', auth()->id())->get();
-
-        if (count($userCart) != 0) {
-            foreach ($userCart as $cartItem) {
-                $cartItem->delete();
-            }
-        }
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'Cart deleted successfully',
         ]);
     }
 }

@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Rating;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Models\Product;
 
 class RattingController extends Controller
 {
@@ -15,12 +14,13 @@ class RattingController extends Controller
     public function index()
     {
         $Ratings = Rating::all();
+
         return response()->json([
-            'Ratings' => $Ratings
+            'Ratings' => $Ratings,
         ]);
     }
 
-    public function RateProduct(Request $request,  $product_id)
+    public function store(Request $request, $product_id)
     {
         $this->validate($request, [
             'rating' => 'required|max:5',
@@ -47,7 +47,7 @@ class RattingController extends Controller
 
         return response()->json([
             'message' => 'Rating added successfully',
-            'rating' => $rating
+            'rating' => $rating,
         ], 200);
     }
 
@@ -58,7 +58,7 @@ class RattingController extends Controller
         $rating->delete();
 
         return response()->json([
-            'message' => 'Rating deleted successfully'
+            'message' => 'Rating deleted successfully',
         ], 201);
     }
 }
