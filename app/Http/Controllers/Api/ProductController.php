@@ -13,9 +13,6 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public $baseurl = 'http://127.0.0.1:8000/';
 
     public function index()

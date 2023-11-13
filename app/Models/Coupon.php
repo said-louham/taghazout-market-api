@@ -15,4 +15,9 @@ class Coupon extends Model
         'value',
         'cart_value',
     ];
+
+    protected $casts = [
+        'value' => 'float',
+        'cart_value' => 'float',
+    ];
 }
