@@ -2,29 +2,29 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Models\PasswordResetToken;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AuthResource;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\ProfileResource;
-use Illuminate\Support\Facades\Validator;
-use App\Notifications\ResetPasswordNotification;
 use App\Mail\ContactUsMail;
 use App\Models\Message;
+use App\Models\PasswordResetToken;
+use App\Models\User;
+use App\Notifications\ResetPasswordNotification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-
     public function index()
     {
         $users = User::orderByRaw("CASE WHEN role = 'admin' THEN 0 ELSE 1 END")
             ->get();
+
         return response()->json([
-            'users' => $users
+            'users' => $users,
         ]);
     }
 
@@ -35,7 +35,7 @@ class AuthController extends Controller
             [
                 'full_name' => 'required',
                 'email' => 'required|email',
-                'password' => 'required'
+                'password' => 'required',
             ]
         );
 
@@ -43,21 +43,21 @@ class AuthController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Validation error',
-                'errors' => $validateUser->errors()
+                'errors' => $validateUser->errors(),
             ]);
         }
 
         $userexist = User::whereEmail($request->email)->first();
         if ($userexist) {
             return response()->json([
-                'error' => 'Oops ! This email is alrady used'
+                'error' => 'Oops ! This email is alrady used',
             ]);
         }
 
         $user = User::create([
             'full_name' => $request->input('full_name'),
             'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password'))
+            'password' => Hash::make($request->input('password')),
         ]);
 
         return response()->json([
@@ -73,7 +73,7 @@ class AuthController extends Controller
             $request->all(),
             [
                 'email' => 'required|email',
-                'password' => 'required'
+                'password' => 'required',
             ]
         );
 
@@ -81,7 +81,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 400,
                 'message' => 'Validation error',
-                'errors' => $validateUser->errors()
+                'errors' => $validateUser->errors(),
             ]);
         }
 
@@ -89,33 +89,33 @@ class AuthController extends Controller
         if (isset($user->id)) {
             if (hash::check($request->password, $user->password)) {
                 $token = $user->createToken('Auth_token')->plainTextToken;
+
                 // return (new AuthResource($user))->withToken($token);
                 return response()->json([
                     'message' => 'Connected successfully',
                     'user' => $user,
                     'token' => $token,
-                    "status" => 200
+                    'status' => 200,
                 ]);
             } else {
                 return response()->json([
                     'message' => 'Wrong credentials',
-                    "status" => 401
+                    'status' => 401,
                 ]);
-            };
+            }
         } else {
             return response()->json([
                 'message' => "User doesn't exists",
-                "status" => 404
+                'status' => 404,
             ]);
-        };
+        }
     }
-
 
     public function Profile()
     {
         // return new ProfileResource(auth()->user());
         return response()->json([
-            'user' => auth()->user()
+            'user' => auth()->user(),
         ]);
     }
 
@@ -125,7 +125,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Logout successfully',
-            'status' => 200
+            'status' => 200,
         ]);
     }
 
@@ -137,7 +137,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'error' => 'No user exists with this email. Please try again.',
             ]);
@@ -165,12 +165,11 @@ class AuthController extends Controller
             'token' => 'required',
         ]);
 
-
         if ($validateUser->fails()) {
             return response()->json([
                 'status' => false,
                 'message' => 'validation error',
-                'error' => $validateUser->errors()
+                'error' => $validateUser->errors(),
             ]);
         }
 
@@ -178,13 +177,13 @@ class AuthController extends Controller
             ->where('token', $request->token)
             ->first();
 
-        if (!$resetRequest) {
+        if (! $resetRequest) {
             return response()->json(['error' => 'Invalid token']);
         }
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['error' => 'Cannot find any user with this email']);
         }
 
@@ -199,11 +198,9 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Your password has been changed successfully',
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ]);
     }
-
-
 
     public function update(Request $request, $id)
     {
@@ -216,7 +213,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 401,
                 'message' => 'validation error',
-                'error' => $validator->errors()
+                'error' => $validator->errors(),
             ]);
         }
 
@@ -231,7 +228,7 @@ class AuthController extends Controller
         return response()->json([
             'status' => 200,
             'message' => ' Account updated successfully',
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -239,17 +236,20 @@ class AuthController extends Controller
     {
         $user = user::find($id);
         $user->delete();
+
         return response()->json([
             'message' => 'User deleted successfully',
-            'data' => $user
+            'data' => $user,
         ]);
     }
+
     public function show($id)
     {
         $user = user::find($id);
+
         return response()->json([
             'user' => $user,
-            'message' => 'user deleted seccessfully'
+            'message' => 'user deleted seccessfully',
         ]);
     }
 
@@ -257,13 +257,13 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'current_password' => ['required', 'string', 'min:8'],
-            'password' => ['required', 'string', 'min:8', 'confirmed']
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'validation error',
-                'error' => $validator->errors()
+                'error' => $validator->errors(),
             ]);
 
             $currentPasswordStatus = Hash::check($request->current_password, auth()->user()->password);
@@ -298,7 +298,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 401,
                 'message' => 'validation error',
-                'errors' => $validatedData->errors()
+                'errors' => $validatedData->errors(),
             ]);
         }
         $savedMessage = Message::create([
@@ -309,15 +309,16 @@ class AuthController extends Controller
         ]);
         try {
             Mail::to($request->email)->send(new ContactUsMail($request->first_name, $request->last_name));
+
             return response()->json([
                 'message' => 'Message sent successfully',
                 'saved_message' => $savedMessage,
-                'status' => 200
+                'status' => 200,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Something went wrong',
-                'status' => 500
+                'status' => 500,
             ]);
         }
     }
