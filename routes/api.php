@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CopponController;
 use App\Http\Controllers\Api\SliderController;
@@ -15,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+// * Handel Login
+Route::post('login', [AuthController::class, 'login']);
+
 // * Handle categories
 Route::apiResource('category', CategoryController::class);
 
