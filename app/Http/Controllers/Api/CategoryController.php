@@ -14,11 +14,6 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $media = QueryBuilder::for(Category::class)->find(23)->getmedia('*');
-        ds([
-            'media' => $media,
-        ]);
-
         $data = QueryBuilder::for(Category::class)
             ->select([
                 'id',
