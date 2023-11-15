@@ -17,8 +17,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// * Handel Login
+// * Handel Auth
 Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
 
 // * Handle categories
 Route::apiResource('category', CategoryController::class);
