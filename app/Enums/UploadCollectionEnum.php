@@ -6,4 +6,6 @@ enum UploadCollectionEnum: string
 {
     case CATEGORIES = 'categories';
 
+    case PRODUCTS = 'products';
+
 }

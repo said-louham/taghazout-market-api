@@ -40,7 +40,7 @@ class RouteServiceProvider extends ServiceProvider
                 $group = base_path("routes/{$path}.php");
 
                 if ($path === $prefix) {
-                    Route::prefix($prefix)->group($group);
+                    Route::prefix($prefix)->middleware('api')->group($group);
                 } else {
                     Route::prefix($prefix)->middleware(['api', 'auth:sanctum'])->group($group);
                 }
