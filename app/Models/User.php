@@ -20,10 +20,9 @@ class User extends Authenticatable
         'phone',
         'address',
         'password',
-        'role',
     ];
 
-    public function Profile(): HasOne
+    public function profile(): HasOne
     {
         return $this->hasOne(Userdetail::class, 'user_id', 'id');
     }
