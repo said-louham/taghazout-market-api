@@ -8,4 +8,6 @@ enum UploadCollectionEnum: string
 
     case PRODUCTS = 'products';
 
+    case SlIDERS = 'sliders';
+
 }
