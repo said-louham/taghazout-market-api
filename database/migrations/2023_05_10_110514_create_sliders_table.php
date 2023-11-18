@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->mediumText('description')->nullable();
-            $table->string('image'); // media
             $table->timestamps();
         });
     }
