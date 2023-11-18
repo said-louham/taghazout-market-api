@@ -10,6 +10,7 @@ class Favorit extends Model
 {
     use HasFactory;
 
+    // TODO:delete id primary key
     protected $fillable = [
         'user_id',
         'product_id',

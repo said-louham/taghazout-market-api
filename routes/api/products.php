@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\RattingController;
 use Illuminate\Support\Facades\Route;
 
 // * Handle  Order
-Route::resource('order', OrderController::class);
+Route::apiResource('order', OrderController::class);
 
 // * Handle  Favorite
 Route::apiResource('favorite', FavoritController::class);
@@ -22,12 +22,12 @@ Route::apiResource('cart', CartController::class);
 Route::apiResource('rating', RattingController::class);
 
 // * Handle products
-Route::resource('product', ProductController::class);
+Route::apiResource('product', ProductController::class);
 Route::patch('Update_product_image/{image_id}', [ProductController::class, 'Update_product_image']);
 Route::delete('delete_image/{image_id}', [ProductController::class, 'delete_image']);
 
 // * Handle order admin
-Route::resource('orderAdmin', AdminOrderController::class);
+Route::apiResource('orderAdmin', AdminOrderController::class);
 //Route::get('order/{order_id}/SendEmail', [AdminOrderController::class, 'Send_email']);
 
 // * Handle users
