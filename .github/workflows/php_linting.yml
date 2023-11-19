@@ -22,6 +22,6 @@ jobs:
         run: ./vendor/bin/pint
 
       - name: Commit changes
-        uses: DeStefano/git-auto-commit-action@v5
+        uses: EndBug/add-and-commit@v9
         with:
           commit_message: Fixed Code Style
