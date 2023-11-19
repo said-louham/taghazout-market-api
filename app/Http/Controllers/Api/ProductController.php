@@ -70,7 +70,7 @@ class ProductController extends Controller
 
         $deletedMedia = collect($data['files'])->whereNotNull('file')->each(static function ($file, $key) use ($request, $product, $modelMedia) {
 
-            if ($request->hasFile('files.'.$key.'.file')) {
+            if ($request->hasFile('files.' . $key . '.file')) {
                 $product->addMedia($file['file'])->usingFileName($file['file']->hashName())->toMediaCollection(UploadCollectionEnum::PRODUCTS->value);
             } elseif (isset($file['media_uuid'])) {
                 $itemKey = array_search($file['media_uuid'], $modelMedia);

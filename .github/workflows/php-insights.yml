@@ -2,7 +2,7 @@ name: Php insights
 on:
   pull_request:
     branches:
-      - dev
+      - master
       - "!dependabot/*"
       - "!dependabot/*/**"
     paths:

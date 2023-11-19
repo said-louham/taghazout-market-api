@@ -37,7 +37,7 @@ class RouteServiceProvider extends ServiceProvider
 
             foreach ($routePaths as $path) {
                 $prefix = 'api';
-                $group = base_path("routes/{$path}.php");
+                $group  = base_path("routes/{$path}.php");
 
                 if ($path === $prefix) {
                     Route::prefix($prefix)->middleware('api')->group($group);

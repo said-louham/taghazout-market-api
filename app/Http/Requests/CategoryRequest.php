@@ -23,9 +23,9 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['bail', 'required', 'string', 'max:250', 'min:1'],
-            'description' => ['bail', 'required', 'string', 'max:250', 'min:1'],
-            'files' => ['required', 'array', 'min:1'],
+            'name'         => ['bail', 'required', 'string', 'max:250', 'min:1'],
+            'description'  => ['bail', 'required', 'string', 'max:250', 'min:1'],
+            'files'        => ['required', 'array', 'min:1'],
             'files.*.file' => ['bail', 'nullable',
                 File::types(array_merge(UploadValidationEnum::IMAGE))
                     ->max(UploadValidationEnum::MAX_FILE_SIZE),

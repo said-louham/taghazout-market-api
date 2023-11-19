@@ -21,9 +21,9 @@ class CategoryResource extends JsonResource
         );
 
         return $this->fields([
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'slug'        => $this->slug,
             'description' => $this->description,
         ]) + ([
             'media_url' => $this->whenNotNull(

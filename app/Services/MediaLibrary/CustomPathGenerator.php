@@ -14,6 +14,6 @@ class CustomPathGenerator extends DefaultPathGenerator
     {
         $model = explode('\\', $media->model_type);
 
-        return end($model).'/'.$media->getKey();
+        return end($model) . '/' . $media->getKey();
     }
 }

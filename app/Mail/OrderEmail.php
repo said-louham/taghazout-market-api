@@ -17,6 +17,7 @@ class OrderEmail extends Mailable implements ShouldQueue
      * Create a new message instance.
      */
     public $order;
+
     public function __construct($order)
     {
         $this->order = $order;
@@ -51,6 +52,7 @@ class OrderEmail extends Mailable implements ShouldQueue
     {
         return [];
     }
+
     public function timeout(): int
     {
         return 60; // Set timeout to 60 seconds

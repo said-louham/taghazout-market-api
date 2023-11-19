@@ -19,26 +19,26 @@ class CartController extends Controller
     public function store(Request $request)
     {
         $cartItems = $request->input('cartItems');
-        $userId = auth()->id();
+        $userId    = auth()->id();
 
         $userCart = Cart::where('user_id', $userId)->get();
 
         if ($userCart->isEmpty()) {
             foreach ($cartItems as $cartItem) {
                 $productId = $cartItem['product_id'];
-                $quantity = $cartItem['quantity'];
+                $quantity  = $cartItem['quantity'];
 
                 $cartItem = new Cart([
-                    'user_id' => $userId,
+                    'user_id'    => $userId,
                     'product_id' => $productId,
-                    'quantity' => $quantity,
+                    'quantity'   => $quantity,
                 ]);
                 $userCart->push($cartItem);
             }
         } else {
             foreach ($cartItems as $cartItem) {
-                $productId = $cartItem['product_id'];
-                $quantity = $cartItem['quantity'];
+                $productId        = $cartItem['product_id'];
+                $quantity         = $cartItem['quantity'];
                 $existingCartItem = $userCart->where('product_id', $productId)->first();
 
                 if ($existingCartItem) {
@@ -46,9 +46,9 @@ class CartController extends Controller
                     $existingCartItem->save();
                 } else {
                     $cartItem = new Cart([
-                        'user_id' => $userId,
+                        'user_id'    => $userId,
                         'product_id' => $productId,
-                        'quantity' => $quantity,
+                        'quantity'   => $quantity,
                     ]);
                     $userCart->push($cartItem);
                 }
@@ -72,7 +72,7 @@ class CartController extends Controller
 
         if (! $cartItem) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Cart item not found',
             ]);
         }
@@ -81,9 +81,9 @@ class CartController extends Controller
         $cartItem->save();
 
         return response()->json([
-            'status' => 200,
+            'status'  => 200,
             'message' => 'Cart updated',
-            'data' => $cartItem,
+            'data'    => $cartItem,
         ]);
     }
 
@@ -98,7 +98,7 @@ class CartController extends Controller
 
         if (! $cartItem) {
             return response()->json([
-                'status' => 404,
+                'status'  => 404,
                 'message' => 'Cart item not found',
             ]);
         }
@@ -106,7 +106,7 @@ class CartController extends Controller
         $cartItem->delete();
 
         return response()->json([
-            'status' => 200,
+            'status'  => 200,
             'message' => 'Product removed from cart',
         ]);
     }

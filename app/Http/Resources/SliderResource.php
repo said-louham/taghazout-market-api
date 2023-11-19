@@ -21,8 +21,8 @@ class SliderResource extends JsonResource
         );
 
         return $this->fields([
-            'id' => $this->id,
-            'title' => $this->title,
+            'id'          => $this->id,
+            'title'       => $this->title,
             'description' => $this->description,
         ]) + ([
             'media_url' => $this->whenNotNull(
