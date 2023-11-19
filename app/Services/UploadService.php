@@ -13,7 +13,7 @@ class UploadService
             $mediaUrl = $item->getUrl();
 
             return [
-                'uuid' => $item->uuid,
+                'uuid'  => $item->uuid,
                 'media' => $mediaUrl,
             ];
         });

@@ -23,7 +23,7 @@ class RattingController extends Controller
     public function store(Request $request, $product_id)
     {
         $this->validate($request, [
-            'rating' => 'required|max:5',
+            'rating'  => 'required|max:5',
             'comment' => 'nullable|string|max:255',
         ]);
 
@@ -32,22 +32,22 @@ class RattingController extends Controller
             ->first();
 
         if ($rating) {
-            $rating->rating = $request->rating;
+            $rating->rating  = $request->rating;
             $rating->comment = $request->comment;
             $rating->save();
         } else {
             $rating = new Rating([
-                'user_id' => auth()->id(),
+                'user_id'    => auth()->id(),
                 'product_id' => $request->product_id,
-                'rating' => $request->rating,
-                'comment' => $request->comment,
+                'rating'     => $request->rating,
+                'comment'    => $request->comment,
             ]);
             $rating->save();
         }
 
         return response()->json([
             'message' => 'Rating added successfully',
-            'rating' => $rating,
+            'rating'  => $rating,
         ], 200);
     }
 

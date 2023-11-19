@@ -28,10 +28,10 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'trending' => 'integer',
-        'featured' => 'integer',
+        'trending'       => 'integer',
+        'featured'       => 'integer',
         'original_price' => 'float',
-        'selling_price' => 'float',
+        'selling_price'  => 'float',
     ];
 
     public function registerMediaConversions(Media $media = null): void

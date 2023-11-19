@@ -31,8 +31,8 @@ class AuthController extends Controller
             $request,
             [
                 'full_name' => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,full_name'],
-                'email' => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,email'],
-                'password' => ['bail', 'required', 'string', 'min:6'],
+                'email'     => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,email'],
+                'password'  => ['bail', 'required', 'string', 'min:6'],
             ]
         );
 
@@ -40,8 +40,8 @@ class AuthController extends Controller
 
         User::create([
             'full_name' => $request->input('full_name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
+            'email'     => $request->input('email'),
+            'password'  => Hash::make($request->input('password')),
         ]);
 
         DB::commit();
@@ -52,7 +52,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $data = [
-            'email' => $request->email,
+            'email'    => $request->email,
             'password' => $request->password,
         ];
 
@@ -61,9 +61,9 @@ class AuthController extends Controller
         }
         $tokenName = config('APP_NAME', 'TOKEN_NAME');
         $expiresAt = app()->isLocal() ? now()->addYear() : now()->addDay();
-        $token = $request->user()->createToken($tokenName, ['*'], $expiresAt);
+        $token     = $request->user()->createToken($tokenName, ['*'], $expiresAt);
         ds([
-            'token' => $tokenName,
+            'token'    => $tokenName,
             'APP_NAME' => config('APP_NAME'),
 
         ]);
@@ -101,9 +101,9 @@ class AuthController extends Controller
     {
 
         $data = $this->validate($request, [
-            'email' => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,email'],
+            'email'    => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,email'],
             'password' => ['bail', 'required', 'string', 'min:6'],
-            'token' => ['bail', 'required', 'string', 'min:4'],
+            'token'    => ['bail', 'required', 'string', 'min:4'],
         ]);
 
         $resetRequest = PasswordResetToken::where('email', $data['email'])
@@ -124,10 +124,10 @@ class AuthController extends Controller
 
         $tokenName = config('APP_NAME', 'TOKEN_NAME');
         $expiresAt = app()->isLocal() ? now()->addYear() : now()->addDay();
-        $token = $request->user()->createToken($tokenName, ['*'], $expiresAt);
+        $token     = $request->user()->createToken($tokenName, ['*'], $expiresAt);
 
         return response()->json([
-            'user' => $user,
+            'user'  => $user,
             'token' => $token,
         ]);
     }
@@ -139,7 +139,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'User deleted successfully',
-            'data' => $user,
+            'data'    => $user,
         ]);
     }
 
@@ -147,7 +147,7 @@ class AuthController extends Controller
     {
         $this->validate($request, [
             'current_password' => ['required', 'string', 'min:8'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $currentPasswordStatus = Hash::check($request->current_password, auth()->user()->password);
@@ -159,7 +159,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Password updated successfully',
-                'data' => auth()->user(),
+                'data'    => auth()->user(),
 
             ]);
         } else {
@@ -173,9 +173,9 @@ class AuthController extends Controller
     {
         $data = $this->validate($request, [
             'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email',
-            'message' => 'required|max:255',
+            'last_name'  => 'required',
+            'email'      => 'required|email',
+            'message'    => 'required|max:255',
         ]);
 
         DB::beginTransaction();

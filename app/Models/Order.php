@@ -26,9 +26,9 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'shipping_cost' => 'float',
+        'shipping_cost'   => 'float',
         'coupon_discount' => 'float',
-        'tax' => 'float',
+        'tax'             => 'float',
     ];
 
     public function user(): BelongsTo

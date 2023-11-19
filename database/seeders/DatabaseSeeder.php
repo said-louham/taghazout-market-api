@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\User;
-use App\Models\Product;
 use App\Models\Category;
 use App\Models\Coupon;
+use App\Models\Product;
+use App\Models\User;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -30,7 +30,6 @@ class DatabaseSeeder extends Seeder
         //         'status' => $faker->randomElement([1, 0])
         //     ]);
         // }
-
 
         // ----------------------------Products----------------------------------------------
 
@@ -69,102 +68,97 @@ class DatabaseSeeder extends Seeder
         // }
         // ----------------------------coupon-------------------------------------------------
         // for ($i = 1; $i <= 10; $i++) {
-            //     $coupon = new Coupon();
-            //     $coupon->code = $faker->unique()->regexify('[A-Z0-9]{10}');
-            //     $coupon->type = $faker->randomElement(['percent', 'fixed']);
-            //     $coupon->value = $faker->randomFloat(2, 5, 50);
-            //     $coupon->cart_value = $faker->randomFloat(2, 50, 100);
-            //     $coupon->save();
-            // }
-            
-            // ----------------------------Users -------------------------------------------------
+        //     $coupon = new Coupon();
+        //     $coupon->code = $faker->unique()->regexify('[A-Z0-9]{10}');
+        //     $coupon->type = $faker->randomElement(['percent', 'fixed']);
+        //     $coupon->value = $faker->randomFloat(2, 5, 50);
+        //     $coupon->cart_value = $faker->randomFloat(2, 50, 100);
+        //     $coupon->save();
+        // }
 
-            $users = [
-                [
-                    'full_name' => 'Mohammed Ali',
-                    'email' => 'mohammed.ali@example.ma',
-                    'phone' => '1234567890',
-                    'address' => '123 Main St, City',
-                    'password' => 'mohammed.ali@example.ma',
-                ],
-                [
-                    'full_name' => 'Fatima Zahra',
-                    'email' => 'fatima.zahra@example.ma',
-                    'phone' => '1234567890',
-                    'address' => '456 Elm St, City',
-                    'password' => 'fatima.zahra@example.ma',
-                ],
-           
-                [
-                    'full_name' => 'Ahmed Hassan',
-                    'email' => 'ahmed.hassan@example.ma',
-                    'phone' => '1234567890',
-                    'address' => 'Random Address',
-                    'password' => 'ahmed.hassan@example.ma',
-                ],
-                [
-                    'full_name' => 'Amina Belkadi',
-                    'email' => 'amina.belkadi@example.ma',
-                    'phone' => '1234567890',
-                    'address' => 'Random Address',
-                    'password' => 'amina.belkadi@example.ma',
-                ],
-                [
-                    'full_name' => 'Youssef El Mansouri',
-                    'email' => 'youssef.elmansouri@example.ma',
-                    'phone' => '1234567890',
-                    'address' => 'Random Address',
-                    'password' => 'youssef.elmansouri@example.ma',
-                ],
-                [
-                    'full_name' => 'Khadija Hamidi',
-                    'email' => 'khadija.hamidi@example.ma',
-                    'phone' => '1234567890',
-                    'address' => 'Random Address',
-                    'password' => 'khadija.hamidi@example.ma',
-                ],
-                [
-                    'full_name' => 'Omar Ben Salah',
-                    'email' => 'omar.bensalah@example.ma',
-                    'phone' => '1234567890',
-                    'address' => 'Random Address',
-                    'password' => 'omar.bensalah@example.ma',
-                ],
-                [
-                    'full_name' => 'Salma El Amrani',
-                    'email' => 'salma.elamrani@example.ma',
-                    'phone' => '1234567890',
-                    'address' => 'Random Address',
-                    'password' => 'salma.elamrani@example.ma',
-                ],
-                [
-                    'full_name' => 'Karim Bouchra',
-                    'email' => 'karim.bouchra@example.ma',
-                    'phone' => '1234567890',
-                    'address' => 'Random Address',
-                    'password' => 'karim.bouchra@example.ma',
-                ],
-                [
-                    'full_name' => 'Laila Fassi',
-                    'email' => 'laila.fassi@example.ma',
-                    'phone' => '1234567890',
-                    'address' => 'Random Address',
-                    'password' => 'laila.fassi@example.ma',
-                ],
-            ];
+        // ----------------------------Users -------------------------------------------------
+
+        $users = [
+            [
+                'full_name' => 'Mohammed Ali',
+                'email'     => 'mohammed.ali@example.ma',
+                'phone'     => '1234567890',
+                'address'   => '123 Main St, City',
+                'password'  => 'mohammed.ali@example.ma',
+            ],
+            [
+                'full_name' => 'Fatima Zahra',
+                'email'     => 'fatima.zahra@example.ma',
+                'phone'     => '1234567890',
+                'address'   => '456 Elm St, City',
+                'password'  => 'fatima.zahra@example.ma',
+            ],
+
+            [
+                'full_name' => 'Ahmed Hassan',
+                'email'     => 'ahmed.hassan@example.ma',
+                'phone'     => '1234567890',
+                'address'   => 'Random Address',
+                'password'  => 'ahmed.hassan@example.ma',
+            ],
+            [
+                'full_name' => 'Amina Belkadi',
+                'email'     => 'amina.belkadi@example.ma',
+                'phone'     => '1234567890',
+                'address'   => 'Random Address',
+                'password'  => 'amina.belkadi@example.ma',
+            ],
+            [
+                'full_name' => 'Youssef El Mansouri',
+                'email'     => 'youssef.elmansouri@example.ma',
+                'phone'     => '1234567890',
+                'address'   => 'Random Address',
+                'password'  => 'youssef.elmansouri@example.ma',
+            ],
+            [
+                'full_name' => 'Khadija Hamidi',
+                'email'     => 'khadija.hamidi@example.ma',
+                'phone'     => '1234567890',
+                'address'   => 'Random Address',
+                'password'  => 'khadija.hamidi@example.ma',
+            ],
+            [
+                'full_name' => 'Omar Ben Salah',
+                'email'     => 'omar.bensalah@example.ma',
+                'phone'     => '1234567890',
+                'address'   => 'Random Address',
+                'password'  => 'omar.bensalah@example.ma',
+            ],
+            [
+                'full_name' => 'Salma El Amrani',
+                'email'     => 'salma.elamrani@example.ma',
+                'phone'     => '1234567890',
+                'address'   => 'Random Address',
+                'password'  => 'salma.elamrani@example.ma',
+            ],
+            [
+                'full_name' => 'Karim Bouchra',
+                'email'     => 'karim.bouchra@example.ma',
+                'phone'     => '1234567890',
+                'address'   => 'Random Address',
+                'password'  => 'karim.bouchra@example.ma',
+            ],
+            [
+                'full_name' => 'Laila Fassi',
+                'email'     => 'laila.fassi@example.ma',
+                'phone'     => '1234567890',
+                'address'   => 'Random Address',
+                'password'  => 'laila.fassi@example.ma',
+            ],
+        ];
         foreach ($users as $user) {
             User::create([
                 'full_name' => $user['full_name'],
-                'email' => $user['email'],
-                'address' => $user['address'],
-                'phone' => $user['phone'],
-                'password' => Hash::make($user['password']),
+                'email'     => $user['email'],
+                'address'   => $user['address'],
+                'phone'     => $user['phone'],
+                'password'  => Hash::make($user['password']),
             ]);
         }
     }
 }
-
-
-        
-    
-

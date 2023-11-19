@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use App\Http\Resources\ProductResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderItemResource extends JsonResource
@@ -16,11 +15,11 @@ class OrderItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id'         => $this->id,
             'product_id' => $this->product_id,
-            'quantity' => $this->quantity,
-            'price' => $this->price,
-            'product' => new ProductResource($this->product),
+            'quantity'   => $this->quantity,
+            'price'      => $this->price,
+            'product'    => new ProductResource($this->product),
         ];
     }
 }

@@ -61,7 +61,7 @@ class CategoryController extends Controller
 
         $deletedMedia = collect($data['files'])->whereNotNull('file')->each(static function ($file, $key) use ($request, $category, $modelMedia) {
 
-            if ($request->hasFile('files.'.$key.'.file')) {
+            if ($request->hasFile('files.' . $key . '.file')) {
                 $category->addMedia($file['file'])->usingFileName($file['file']->hashName())->toMediaCollection(UploadCollectionEnum::PRODUCTS->value);
             } elseif (isset($file['media_uuid'])) {
                 $itemKey = array_search($file['media_uuid'], $modelMedia);
@@ -85,11 +85,11 @@ class CategoryController extends Controller
     {
         DB::beginTransaction();
 
-        $data = $request->validated();
+        $data       = $request->validated();
         $modelMedia = UploadService::getMedia(mediaModel: $category, collection: UploadCollectionEnum::CATEGORIES->value)->pluck('uuid')->toArray();
 
         foreach ($data['files'] as $key => $file) {
-            if ($request->hasFile('files.'.$key.'.file')) {
+            if ($request->hasFile('files.' . $key . '.file')) {
                 $category->addMedia($file['file'])->usingFileName($file['file']->hashName())->toMediaCollection(UploadCollectionEnum::PRODUCTS->value);
             } elseif (isset($file['media_uuid'])) {
                 $itemKey = array_search($file['media_uuid'], $modelMedia);

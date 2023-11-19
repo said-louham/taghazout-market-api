@@ -16,17 +16,17 @@ class ProductResource extends JsonResource
     {
         // add media
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'description' => $this->description,
+            'id'             => $this->id,
+            'name'           => $this->name,
+            'slug'           => $this->slug,
+            'description'    => $this->description,
             'original_price' => $this->original_price,
-            'selling_price' => $this->selling_price,
-            'quantity' => $this->quantity,
-            'trending' => $this->trending,
-            'featured' => $this->featured,
-            'category' => $this->whenLoaded('category'),
-            'ratings' => $this->whenLoaded('ratings'),
+            'selling_price'  => $this->selling_price,
+            'quantity'       => $this->quantity,
+            'trending'       => $this->trending,
+            'featured'       => $this->featured,
+            'category'       => $this->whenLoaded('category'),
+            'ratings'        => $this->whenLoaded('ratings'),
 
         ];
     }
