@@ -1,0 +1,27 @@
+name: PHP Linting
+on:
+  pull_request:
+    branches:
+      - dev
+      - "!dependabot/*"
+      - "!dependabot/*/**"
+
+jobs:
+  laravel-pint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Composer Install
+        run: composer install
+
+      - name: Run Laravel Pint
+        run: ./vendor/bin/pint
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Fixed Code Style
