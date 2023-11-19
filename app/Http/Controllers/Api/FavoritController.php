@@ -16,9 +16,8 @@ class FavoritController extends Controller
         $favorites = Favorit::where('user_id', auth()->id())
             ->with('product.ProductImages')
             ->get();
-
         return response()->json([
-            'status'   => 'success',
+            'status' => 'success',
             'wishlist' => $favorites,
         ]);
     }
@@ -29,28 +28,26 @@ class FavoritController extends Controller
             $Favorit = Favorit::where('user_id', auth()->id())->where('product_id', $request->product_id)->exists();
             if ($Favorit) {
                 return response()->json([
-                    'status'  => 409,
-                    'message' => 'Product already added to Favorit',
+                    'status' => 409,
+                    'message' => 'Product already added to Favorit'
                 ], 200);
             } else {
-                $Favorit = Favorit::create([
+                $Favorit= Favorit::create([
                     'product_id' => $request->product_id,
-                    'user_id'    => auth()->id(),
+                    'user_id' => auth()->id()
                 ]);
                 $favorites = Favorit::where('user_id', auth()->id())
-                    ->with('product.ProductImages')
-                    ->get();
-
+                ->with('product.ProductImages')
+                ->get();
                 return response()->json([
-                    'status'   => 200,
-                    'message'  => 'Product added to Favorit',
-                    'wishlist' => $favorites,
+                    'status' => 200,
+                    'message' => 'Product added to Favorit',
+                    'wishlist' => $favorites
                 ], 201);
             }
         }
-
         return response()->json([
-            'status'  => 401,
+            'status' => 401,
             'message' => 'Unauthorized',
         ]);
     }
@@ -64,16 +61,15 @@ class FavoritController extends Controller
             $favorites = Favorit::where('user_id', auth()->id())
                 ->with('product.ProductImages')
                 ->get();
-
             return response()->json([
-                'status'   => 200,
-                'message'  => 'Product removed from favorites',
-                'wishlist' => $favorites,
+                'status' => 200,
+                'message' => 'Product removed from favorites',
+                'wishlist' => $favorites
             ]);
         }
 
         return response()->json([
-            'status'  => 404,
+            'status' => 404,
             'message' => 'Product not found in favorites',
         ]);
     }
