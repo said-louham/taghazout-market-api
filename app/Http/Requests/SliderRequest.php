@@ -18,9 +18,9 @@ class SliderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['bail', 'required', 'string', 'max:255'],
+            'title'       => ['bail', 'required', 'string', 'max:255'],
             'description' => ['bail', 'required', 'string', 'max:255'],
-            'file' => ['bail', 'nullable',
+            'file'        => ['bail', 'nullable',
                 File::types(array_merge(UploadValidationEnum::IMAGE))
                     ->max(UploadValidationEnum::MAX_FILE_SIZE),
             ],
