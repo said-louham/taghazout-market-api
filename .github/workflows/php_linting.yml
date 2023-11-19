@@ -15,8 +15,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Composer Install
-        run: composer install
+      - name: Install dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
       - name: Run Laravel Pint
         run: ./vendor/bin/pint
