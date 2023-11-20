@@ -25,21 +25,14 @@ class FavoritController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->check()) {
-            $Favorit = Favorit::where('user_id', auth()->id())->where('product_id', $request->product_id)->exists();
-            if ($Favorit) {
-                return response()->json([
-                    'status'  => 409,
-                    'message' => 'Product already added to Favorit',
-                ], 200);
-            } else {
-                $Favorit = Favorit::create([
-                    'product_id' => $request->product_id,
-                    'user_id'    => auth()->id(),
-                ]);
-                $favorites = Favorit::where('user_id', auth()->id())
-                    ->with('product.ProductImages')
-                    ->get();
+        $data = $request->validated();
+
+        Favorit::updateOrCreate(
+            [
+                'user_id'    => auth()->id(),
+                'product_id' => $data['product_id'],
+            ],
+            $data + auth()->id());
 
                 return response()->json([
                     'status'   => 200,
