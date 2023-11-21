@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CopponController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SliderController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,9 @@ Route::post('register', [AuthController::class, 'register']);
 
 // * Handle categories
 Route::apiResource('category', CategoryController::class);
+
+// * Handle products
+Route::resource('product', ProductController::class);
 
 // * Handle sliders
 Route::apiResource('slider', SliderController::class);
