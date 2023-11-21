@@ -3,111 +3,61 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CartRequest;
 use App\Http\Resources\CartResource;
 use App\Models\Cart;
-use Illuminate\Http\Request;
+use App\Models\Category;
+use Illuminate\Support\Facades\DB;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class CartController extends Controller
 {
     public function index()
     {
-        $cartItems = Cart::where('user_id', auth()->id())->with('product')->get();
+        $data = QueryBuilder::for(Category::class)
+            ->select([
+                'user_id',
+                'product_id',
+                'quantity',
+            ])
+            ->where('user_id', auth()->id())
+            ->with((
+                'product:id,name,selling_price'
+            ));
 
-        return CartResource::collection($cartItems);
+        return CartResource::collection($data->get());
     }
 
-    public function store(Request $request)
+    public function store(CartRequest $request)
     {
-        $cartItems = $request->input('cartItems');
-        $userId    = auth()->id();
+        $data   = $request->validated();
+        $userId = auth()->id();
 
-        $userCart = Cart::where('user_id', $userId)->get();
+        collect($data['items'])->each(function ($item) use ($userId) {
+            $productId = $item['product_id'];
+            $quantity  = $item['quantity'];
 
-        if ($userCart->isEmpty()) {
-            foreach ($cartItems as $cartItem) {
-                $productId = $cartItem['product_id'];
-                $quantity  = $cartItem['quantity'];
-
-                $cartItem = new Cart([
-                    'user_id'    => $userId,
-                    'product_id' => $productId,
-                    'quantity'   => $quantity,
-                ]);
-                $userCart->push($cartItem);
-            }
-        } else {
-            foreach ($cartItems as $cartItem) {
-                $productId        = $cartItem['product_id'];
-                $quantity         = $cartItem['quantity'];
-                $existingCartItem = $userCart->where('product_id', $productId)->first();
-
-                if ($existingCartItem) {
-                    $existingCartItem->quantity += $quantity;
-                    $existingCartItem->save();
-                } else {
-                    $cartItem = new Cart([
-                        'user_id'    => $userId,
-                        'product_id' => $productId,
-                        'quantity'   => $quantity,
-                    ]);
-                    $userCart->push($cartItem);
-                }
-            }
-        }
-
-        $userCart->each(function ($cartItem) {
-            $cartItem->save();
+            Cart::updateOrCreate(
+                ['user_id' => $userId, 'product_id' => $productId],
+                ['quantity' => DB::raw("quantity + $quantity")]
+            );
         });
-
-        return CartResource::collection($userCart);
     }
 
-    public function update(Request $request, string $id)
+    public function update(CartRequest $request, Cart $cart)
     {
-        $quantity = $request->input('quantity', 1);
+        $data = $request->validated() + auth()->id();
 
-        $cartItem = Cart::where('user_id', auth()->id())
-            ->where('id', $id)
-            ->first();
+        $cart->updateOrFail($data);
 
-        if (! $cartItem) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Cart item not found',
-            ]);
-        }
-
-        $cartItem->quantity = $quantity;
-        $cartItem->save();
-
-        return response()->json([
-            'status'  => 200,
-            'message' => 'Cart updated',
-            'data'    => $cartItem,
-        ]);
+        return response()->json(true);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Cart $cart)
     {
-        $cartItem = Cart::where('user_id', auth()->id())
-            ->where('id', $id)
-            ->first();
 
-        if (! $cartItem) {
-            return response()->json([
-                'status'  => 404,
-                'message' => 'Cart item not found',
-            ]);
-        }
+        $cart->delete();
 
-        $cartItem->delete();
-
-        return response()->json([
-            'status'  => 200,
-            'message' => 'Product removed from cart',
-        ]);
+        return response()->json(true);
     }
 }
