@@ -12,12 +12,10 @@ class Setting extends Model
     protected $fillable = [
         'website_name',
         'website_url',
-        'adress',
+        'address',
         'phone',
         'email',
         'facebook',
         'instagram',
-        'twitter',
-        'linkden',
     ];
 }
