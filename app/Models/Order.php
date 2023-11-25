@@ -13,7 +13,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'tracking_no',
+        'tracking_nbr',
         'full_name',
         'email',
         'phone',
@@ -30,6 +30,11 @@ class Order extends Model
         'coupon_discount' => 'float',
         'tax'             => 'float',
     ];
+
+    public function updateOrderstatus($order, $status): void
+    {
+        $order->update(['status_message' => $status]);
+    }
 
     public function user(): BelongsTo
     {

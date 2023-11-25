@@ -7,87 +7,69 @@ use App\Http\Resources\OrderResource;
 use App\Mail\OrderEmail;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class AdminOrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('user', 'orderItems.product')->orderBy('created_at', 'desc')->get();
+        $data = QueryBuilder::for(Order::class)
+            ->select([
+                'user_id',
+                'tracking_nbr',
+                'full_name',
+                'email',
+                'phone',
+                'address',
+                'status_message',
+                'payment_mode',
+                'coupon_discount',
+                'shipping_cost',
+                'tax',
+            ])->with([
+                'user:id,full_name',
+                'order_items:id,order_id,product_id,quantity,price' => [
+                    'product:id,name',
+                ],
+            ]);
 
-        return Response::toJsonResponse(OrderResource::collection($orders));
+        return OrderResource::collection($data->paginate(10));
     }
 
-    public function show(string $id)
+    public function show(Order $order)
     {
-        $order = Order::find($id);
-        if ($order) {
-            return response()->json([
-                'order' => $order,
-            ]);
-        } else {
-            return response()->json([
-                'message' => 'Order not found',
-            ], 404);
-        }
+        return response()->json($order);
     }
 
-    // update Orders status
-    public function update(Request $request, string $id)
+    public function update(Request $request, Order $order)
     {
-        $order = Order::find($id);
-        if ($order) {
-            $order->update([
-                'status_message' => $request->status_message,
-            ]);
+        $order->updateOrderstatus($order, $request->status_message);
 
-            return response()->json([
-                'status'  => true,
-                'message' => 'Status updated',
-                'order'   => $order,
-            ]);
-        } else {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Order not found',
-            ], 404);
-        }
+        return response()->json($order);
     }
 
-    public function destroy(string $id)
+    public function destroy(Order $order)
     {
-        $order = Order::find($id);
-        if ($order) {
-            $order->delete();
+        DB::beginTransaction();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Order deleted successfully',
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found',
-            ], 404);
-        }
+        $order->order_items()->delete();
+        $order->delete();
+
+        DB::commit();
     }
 
     public function SendEmail($id)
     {
         $order = Order::find($id);
-        try {
-            Mail::to($order->email)->send(new OrderEmail($order));
 
-            return response()->json([
-                'status'  => true,
-                'message' => 'Email sent',
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Email not sent',
-            ], 404);
-        }
+        DB::beginTransaction();
+
+        Mail::to($order->email)->send(new OrderEmail($order));
+
+        DB::commit();
+
+        return response()->json(true);
     }
 }

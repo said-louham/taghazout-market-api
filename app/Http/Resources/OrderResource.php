@@ -16,8 +16,7 @@ class OrderResource extends JsonResource
     {
         return [
             'id'              => $this->id,
-            'user_id'         => $this->user_id,
-            'tracking_no'     => $this->tracking_no,
+            'tracking_nbr'    => $this->tracking_nbr,
             'full_name'       => $this->full_name,
             'email'           => $this->email,
             'phone'           => $this->phone,
@@ -27,9 +26,8 @@ class OrderResource extends JsonResource
             'coupon_discount' => $this->coupon_discount,
             'shipping_cost'   => $this->shipping_cost,
             'tax'             => $this->tax,
-            'created_at'      => $this->created_at,
-            'updated_at'      => $this->updated_at,
-            'order_items'     => OrderItemResource::collection($this->orderItems),
+            'category'        => $this->whenLoaded('category'),
+            'order_items'     => OrderItemResource::collection($this->whenLoaded('order_items')),
         ];
     }
 }
