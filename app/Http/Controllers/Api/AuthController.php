@@ -31,7 +31,7 @@ class AuthController extends Controller
             $request,
             [
                 'full_name' => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,full_name'],
-                'email'     => ['bail', 'required', 'string', 'min:3', 'max:50', 'unique:users,email'],
+                'email'     => ['bail', 'required', 'email', 'min:3', 'max:50', 'unique:users,email'],
                 'password'  => ['bail', 'required', 'string', 'min:6'],
             ]
         );
