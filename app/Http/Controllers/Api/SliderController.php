@@ -20,9 +20,10 @@ class SliderController extends Controller
                 'id',
                 'title',
                 'description',
-            ]);
+            ])
+            ->paginate(_paginatePages());
 
-        return SliderResource::collection($data->get());
+        return SliderResource::collection($data);
     }
 
     public function store(SliderRequest $request)

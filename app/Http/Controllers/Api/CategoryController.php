@@ -22,9 +22,10 @@ class CategoryController extends Controller
                 'name',
                 'slug',
                 'description',
-            ]);
+            ])
+            ->paginate(_paginatePages());
 
-        return CategoryResource::collection($data->get());
+        return CategoryResource::collection($data);
     }
 
     public function store(CategoryRequest $request)

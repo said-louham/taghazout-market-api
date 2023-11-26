@@ -36,9 +36,10 @@ class ProductController extends Controller
                 'ratings:id,comment,rating,product_id,user_id,created_at' => [
                     'user:id,full_name',
                 ],
-            ]);
+            ])
+            ->paginate(_paginatePages());
 
-        return ProductResource::collection($data->get());
+        return ProductResource::collection($data);
     }
 
     public function store(ProductRequest $request)

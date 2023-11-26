@@ -33,9 +33,10 @@ class AdminOrderController extends Controller
                 'order_items:id,order_id,product_id,quantity,price' => [
                     'product:id,name',
                 ],
-            ]);
+            ])
+            ->paginate(_paginatePages());
 
-        return OrderResource::collection($data->paginate(10));
+        return OrderResource::collection($data);
     }
 
     public function show(Order $order)
