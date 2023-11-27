@@ -21,8 +21,6 @@ Route::apiResource('cart', CartController::class);
 // * Handle  Ratings
 Route::apiResource('rating', RattingController::class);
 
-// * Handle products
-Route::resource('product', ProductController::class);
 Route::patch('Update_product_image/{image_id}', [ProductController::class, 'Update_product_image']);
 Route::delete('delete_image/{image_id}', [ProductController::class, 'delete_image']);
 

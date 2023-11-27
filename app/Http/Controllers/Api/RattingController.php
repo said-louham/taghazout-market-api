@@ -3,62 +3,46 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RatingRequest;
+use App\Models\Product;
 use App\Models\Rating;
-use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class RattingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $Ratings = Rating::all();
 
-        return response()->json([
-            'Ratings' => $Ratings,
-        ]);
+        $data = QueryBuilder::for(Rating::class)
+            ->select([
+                'user_id',
+                'product_id',
+                'rating',
+                'comment',
+            ])->with(['user:id,full_name']);
+
+        return response()->json($data->get());
     }
 
-    public function store(Request $request, $product_id)
+    public function store(RatingRequest $request)
     {
-        $this->validate($request, [
-            'rating'  => 'required|max:5',
-            'comment' => 'nullable|string|max:255',
-        ]);
+        $data = $request->validated();
 
-        $rating = Rating::where('user_id', auth()->id())
-            ->where('product_id', $product_id)
-            ->first();
-
-        if ($rating) {
-            $rating->rating  = $request->rating;
-            $rating->comment = $request->comment;
-            $rating->save();
-        } else {
-            $rating = new Rating([
+        Product::updateOrCreate(
+            [
                 'user_id'    => auth()->id(),
-                'product_id' => $request->product_id,
-                'rating'     => $request->rating,
-                'comment'    => $request->comment,
-            ]);
-            $rating->save();
-        }
+                'product_id' => $data['product_id'],
+            ],
+            $data + auth()->id());
 
-        return response()->json([
-            'message' => 'Rating added successfully',
-            'rating'  => $rating,
-        ], 200);
+        return response()->json(true);
     }
 
-    public function destroy($product_id)
+    public function destroy(Rating $rating)
     {
-        $rating = Rating::where('user_id', auth()->id())
-            ->where('product_id', $product_id);
+
         $rating->delete();
 
-        return response()->json([
-            'message' => 'Rating deleted successfully',
-        ], 201);
+        return response()->json(true);
     }
 }
