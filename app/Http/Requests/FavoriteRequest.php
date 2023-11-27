@@ -19,7 +19,8 @@ class FavoriteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => ['bail', 'required', 'integer', Rule::exists(Product::class, 'id')],
+            '*'            => ['bail', 'required', 'array', 'min:1'],
+            '*.product_id' => ['bail', 'required', 'integer', Rule::exists(Product::class, 'id')],
         ];
     }
 }

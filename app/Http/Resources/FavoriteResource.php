@@ -24,11 +24,9 @@ class FavoriteResource extends JsonResource
             UploadService::getMedia(mediaModel: Product::find($this->product_id), collection: UploadCollectionEnum::PRODUCTS->value) : null;
 
         return $this->fields([
-            'id'      => $this->id,
             'name'    => $this->name,
             'product' => $this->whenLoaded('product'),
-        ]) + ([
-            'product_media_url' => $this->whenNotNull($productMediaUrl),
-        ]);
+        ]) + (
+            ['product_media_url' => $productMediaUrl ? $productMediaUrl->first() : null]);
     }
 }
