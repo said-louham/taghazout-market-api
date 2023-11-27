@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FavoriteRequest;
 use App\Http\Resources\FavoriteResource;
 use App\Models\Favorite;
+use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class FavoritController extends Controller
@@ -25,20 +26,21 @@ class FavoritController extends Controller
 
     public function store(FavoriteRequest $request)
     {
-        $products = $request->validated();
+        $data = collect($request->validated())->keyBy('product_id');
 
         $user = auth()->user();
-        $user->products()->sync($products);
+
+        $user->products()->sync($data);
 
         return response()->json(true);
     }
 
-    public function destroy(Favorite $favorit)
+    public function deleteWishlist(Request $request)
     {
-        // delete
-        $favorit->where('product_id', $favorit->product_id)
-            ->where('user_id', auth()->id())
-            ->delete();
+        $products = $request->input('products', []);
+        $user     = auth()->user();
+
+        $user->products()->whereIn('product_id', $products)->delete();
 
         return response()->json(true);
     }
