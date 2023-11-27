@@ -14,6 +14,7 @@ Route::resource('order', OrderController::class);
 
 // * Handle  Favorite
 Route::apiResource('favorite', FavoritController::class);
+Route::delete('delete_wishlist', [FavoritController::class, 'deleteWishlist']);
 
 // * Handle  User Cart
 Route::apiResource('cart', CartController::class);

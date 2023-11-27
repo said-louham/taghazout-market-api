@@ -5,17 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FavoriteRequest;
 use App\Http\Resources\FavoriteResource;
-use App\Models\Favorit;
+use App\Models\Favorite;
+use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class FavoritController extends Controller
 {
     public function index()
     {
-        $data = QueryBuilder::for(Favorit::class)
+        $data = QueryBuilder::for(Favorite::class)
             ->where('user_id', auth()->id())
             ->select([
-                'id',
                 'product_id',
             ])->with([
                 'product:id,name',
@@ -26,23 +26,21 @@ class FavoritController extends Controller
 
     public function store(FavoriteRequest $request)
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->keyBy('product_id');
 
-        Favorit::updateOrCreate(
-            [
-                'user_id'    => auth()->id(),
-                'product_id' => $data['product_id'],
-            ],
-            $data + auth()->id());
+        $user = auth()->user();
+
+        $user->products()->sync($data);
 
         return response()->json(true);
     }
 
-    public function destroy(Favorit $favorit)
+    public function deleteWishlist(Request $request)
     {
-        $favorit->where('product_id', $favorit->product_id)
-            ->where('user_id', auth()->id())
-            ->delete();
+        $products = $request->input('products', []);
+        $user     = auth()->user();
+
+        $user->products()->whereIn('product_id', $products)->delete();
 
         return response()->json(true);
     }

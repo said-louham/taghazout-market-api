@@ -1,7 +1,5 @@
 <?php
 
-use App\Services\MediaLibrary\CustomPathGenerator;
-
 return [
 
     /*
@@ -68,7 +66,6 @@ return [
     /*
      * This is the class that is responsible for naming generated files.
      */
-    //   'file_namer' => CustomPathGenerator::class,
     'file_namer' => Spatie\MediaLibrary\Support\FileNamer\DefaultFileNamer::class,
 
     /*

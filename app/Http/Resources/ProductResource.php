@@ -2,20 +2,25 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\UploadCollectionEnum;
+use App\Http\Controllers\Api\ProductController;
+use App\Services\UploadService;
+use App\Traits\ResourceFilterable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
+    use ResourceFilterable;
+
     public function toArray(Request $request): array
     {
-        // add media
-        return [
+        $mediaUuid = UploadService::getMedia(
+            mediaModel: $this,
+            collection: UploadCollectionEnum::PRODUCTS->value
+        );
+
+        return $this->fields([
             'id'             => $this->id,
             'name'           => $this->name,
             'slug'           => $this->slug,
@@ -27,7 +32,12 @@ class ProductResource extends JsonResource
             'featured'       => $this->featured,
             'category'       => $this->whenLoaded('category'),
             'ratings'        => $this->whenLoaded('ratings'),
-
-        ];
+        ]) + ([
+            'media_url' => $this->whenNotNull(
+                $request->route()->getControllerClass() == ProductController::class && $mediaUuid->isNotEmpty() ?
+                    $mediaUuid :
+                    null
+            )]
+        );
     }
 }

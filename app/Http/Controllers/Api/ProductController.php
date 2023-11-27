@@ -51,7 +51,7 @@ class ProductController extends Controller
         $product = Product::create($data);
 
         collect($data['files'])->whereNotNull('file')->each(function ($file) use ($product) {
-            $product->addMedia($file)->usingFileName($file->hashName())->toMediaCollection(UploadCollectionEnum::PRODUCTS->value);
+            $product->addMedia($file['file'])->usingFileName($file['file']->hashName())->toMediaCollection(UploadCollectionEnum::PRODUCTS->value);
         });
 
         DB::commit();
