@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->string('tracking_nbr');
-            $table->string('full_name');
-            $table->string('email');
-            $table->string('phone');
-            $table->mediumText('address');
+            $table->string('full_name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
+            $table->mediumText('address')->nullable();
             $table->string('status_message');
             $table->string('payment_mode');
             $table->timestamps();
