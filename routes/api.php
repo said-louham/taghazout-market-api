@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CopponController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SliderController;
 use Illuminate\Support\Facades\Route;
@@ -26,10 +27,13 @@ Route::post('register', [AuthController::class, 'register']);
 Route::apiResource('category', CategoryController::class);
 
 // * Handle products
-Route::resource('product', ProductController::class);
+Route::apiResource('product', ProductController::class);
 
 // * Handle sliders
 Route::apiResource('slider', SliderController::class);
+
+// * Handle  Order
+Route::apiResource('order', OrderController::class);
 
 // * Handle coupons
 Route::apiResource('coupon', CopponController::class);

@@ -29,6 +29,8 @@ class Product extends Model implements HasMedia
         'featured',
     ];
 
+    protected $hidden = ['pivot'];
+
     protected $casts = [
         'trending'       => 'integer',
         'featured'       => 'integer',
@@ -66,5 +68,10 @@ class Product extends Model implements HasMedia
     public function user(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'favorites', 'product_id', 'user_id');
+    }
+
+    public function order_items(): BelongsToMany
+    {
+        return $this->belongsToMany(product::class, 'order_products', 'order_id', 'product_id');
     }
 }

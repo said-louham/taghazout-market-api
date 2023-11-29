@@ -3,114 +3,74 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\OrderResource;
+use App\Http\Requests\OrderRequest;
 use App\Jobs\SendOrderEmail;
-use App\Mail\OrderEmail;
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $orders = Order::where('user_id', auth()->user()->id)->orderBy('created_at', 'desc')->get();
+        $data = QueryBuilder::for(Order::class)
+            ->select([
+                'id',
+                'user_id',
+                'tracking_nbr',
+                'full_name',
+                'email',
+                'phone',
+                'address',
+                'status',
+                'payment_mode',
+                // 'coupon_discount',
+                //  'shipping_cost',
+                //  'tax',
+            ])
+            ->with([
+                'user:id,full_name',
 
-        return response()->json([
-            'orders' => $orders,
-        ]);
+                'order_items' => static function ($query) {
+                    $query->select([
+                        'price',
+                        'product_id',
+                        'selling_price',
+                        'order_products.quantity',
+                        'trending',
+                        'featured',
+                    ]);
+                },
+
+            ])
+            ->where('user_id', auth()->id())
+            ->paginate(10);
+
+        return response()->json($data);
     }
 
-    public function store(Request $request)
+    public function store(OrderRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'full_name'    => 'required|string|max:255',
-            'email'        => 'required|email|max:255',
-            'phone'        => 'required|string|max:255',
-            'address'      => 'required|string|max:255',
-            'payment_mode' => 'required|string|max:255',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'validation error',
-                'error'   => $validator->errors(),
-            ]);
-        }
-        $order = Order::create([
-            'user_id'         => auth()->user()->id,
-            'tracking_no'     => 'taghazout-market-' . Str::random(10),
-            'full_name'       => $request->full_name,
-            'email'           => $request->email,
-            'phone'           => $request->phone,
-            'address'         => $request->address,
-            'status_message'  => 'in-progress',
-            'payment_mode'    => $request->payment_mode,
-            'coupon_discount' => $request->coupon_discount ?? 0,
-            'shipping_cost'   => $request->shipping_cost   ?? 0,
-            'tax'             => $request->tax             ?? 0,
-        ]);
+        $data = $request->validated();
+        $user = auth()->check() ? User::findOrFail(auth()->id()) : null;
 
-        $user = User::find(auth()->user()->id);
-        $user->update([
-            'phone'   => $request->phone,
-            'address' => $request->address,
-        ]);
+        DB::beginTransaction();
 
-        if (isset($request->cart) && is_array($request->cart)) {
-            foreach ($request->cart as $cartItem) {
-                $product   = Product::findOrFail($cartItem['product_id']);
-                $orderItem = OrderItem::create([
-                    'order_id'   => $order->id,
-                    'product_id' => $cartItem['product_id'],
-                    'quantity'   => $cartItem['quantity'],
-                    'price'      => $product->selling_price,
-                ]);
+        $order = Order::create(collect($data)->except(['cart'])->toArray() + ['user_id' => $user?->id]);
+        $order->order_items()->sync($data['cart']);
 
-                // decrement product quantiy
-                $product->decrement('quantity', $cartItem['quantity']);
-            }
-        } else {
-            return response()->json([
-                'message' => 'validation error',
-                'error'   => 'cart is empty',
-            ]);
-        }
-        try {
-            // Mail::to($order->email)->send(new OrderEmail($order));
-            // SendOrderEmail::dispatch($order);
-            dispatch(new SendOrderEmail($order));
+        $order->updateUserAndDecrementProductQuantity($user, $data);
 
-            return Response::toJsonResponse(new OrderResource($order));
+        //  dispatch(new SendOrderEmail($order));
 
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Something went wrong.' . $e->getMessage()], 500);
-        }
+        DB::commit();
+
+        return response()->json(true);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
+    public function show(Order $order)
     {
-        $order = Order::where('user_id', auth()->user()->id)->where('id', $id)->first();
-        if ($order) {
-            return response()->json([
-                'order' => $order,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found',
-            ]);
-        }
+        return response()->json($order);
     }
 }
