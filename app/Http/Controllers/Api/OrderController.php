@@ -4,13 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
-use App\Http\Resources\OrderResource;
 use App\Jobs\SendOrderEmail;
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
 use App\Models\User;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class OrderController extends Controller
@@ -19,25 +16,36 @@ class OrderController extends Controller
     {
         $data = QueryBuilder::for(Order::class)
             ->select([
+                'id',
                 'user_id',
                 'tracking_nbr',
                 'full_name',
                 'email',
                 'phone',
                 'address',
-                'status_message',
+                'status',
                 'payment_mode',
-                'coupon_discount',
-                'shipping_cost',
-                'tax',
-            ])->with([
+                // 'coupon_discount',
+                //  'shipping_cost',
+                //  'tax',
+            ])
+            ->with([
                 'user:id,full_name',
-                'order_items:id,order_id,product_id,quantity,price' => [
-                    'product:id,name',
-                ],
+
+                'order_items' => static function ($query) {
+                    $query->select([
+                        'price',
+                        'product_id',
+                        'selling_price',
+                        'order_products.quantity',
+                        'trending',
+                        'featured',
+                    ]);
+                },
+
             ])
             ->where('user_id', auth()->id())
-            ->paginate(_paginatePages());
+            ->paginate(10);
 
         return response()->json($data);
     }
@@ -45,44 +53,24 @@ class OrderController extends Controller
     public function store(OrderRequest $request)
     {
         $data = $request->validated();
+        $user = auth()->check() ? User::findOrFail(auth()->id()) : null;
 
-        $order = Order::create($data);
+        DB::beginTransaction();
 
-        $user = User::find(auth()->user()->id);
+        $order = Order::create(collect($data)->except(['cart'])->toArray() + ['user_id' => $user?->id]);
+        $order->order_items()->sync($data['cart']);
 
-        $user->update([
-            'phone'   => $request->phone,
-            'address' => $request->address,
-        ]);
+        $order->updateUserAndDecrementProductQuantity($user, $data);
 
-        foreach ($data['cart'] as $item) {
-            OrderItem::create($item + ['order_id' => $order->id]);
+        //  dispatch(new SendOrderEmail($order));
 
-            // decrement product quantiy
-            //   $product->decrement('quantity', $item['quantity']);
-        }
+        DB::commit();
 
-        dispatch(new SendOrderEmail($order));
-
-        return Response::toJsonResponse(new OrderResource($order));
-
+        return response()->json(true);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
+    public function show(Order $order)
     {
-        $order = Order::where('user_id', auth()->user()->id)->where('id', $id)->first();
-        if ($order) {
-            return response()->json([
-                'order' => $order,
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found',
-            ]);
-        }
+        return response()->json($order);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Order extends Model
 {
@@ -18,7 +18,7 @@ class Order extends Model
         'email',
         'phone',
         'address',
-        'status_message',
+        'status',
         'payment_mode',
         'coupon_discount',
         'shipping_cost',
@@ -31,9 +31,23 @@ class Order extends Model
         'tax'             => 'float',
     ];
 
-    public function updateOrderstatus($order, $status): void
+    public function updateOrderstatus($order, int $status): void
     {
-        $order->update(['status_message' => $status]);
+        $order->update(['status' => $status]);
+    }
+
+    public function updateUserAndDecrementProductQuantity($user, array $data = []): void
+    {
+        if (! is_null($user)) {
+            $user->update([
+                'phone'   => $data['phone'],
+                'address' => $data['address'],
+            ]);
+        }
+
+        foreach ($data['cart'] as $cart) {
+            Product::find($cart['product_id'])->decrement('quantity', $cart['quantity']);
+        }
     }
 
     public function user(): BelongsTo
@@ -41,8 +55,8 @@ class Order extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function order_items(): HasMany
+    public function order_items(): BelongsToMany
     {
-        return $this->hasMany(OrderItem::class, 'order_id');
+        return $this->belongsToMany(product::class, 'order_products', 'order_id', 'product_id');
     }
 }
