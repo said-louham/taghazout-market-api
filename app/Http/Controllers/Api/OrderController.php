@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
+use App\Http\Resources\OrderResource;
 use App\Jobs\SendOrderEmail;
 use App\Models\Order;
 use App\Models\User;
@@ -25,29 +26,25 @@ class OrderController extends Controller
                 'address',
                 'status',
                 'payment_mode',
-                // 'coupon_discount',
-                //  'shipping_cost',
-                //  'tax',
+                'coupon_discount',
+                'shipping_cost',
+                'tax',
             ])
+            ->withExists('user')
             ->with([
-                'user:id,full_name',
-
                 'order_items' => static function ($query) {
                     $query->select([
                         'price',
                         'product_id',
                         'selling_price',
                         'order_products.quantity',
-                        'trending',
-                        'featured',
                     ]);
                 },
-
             ])
             ->where('user_id', auth()->id())
-            ->paginate(10);
+            ->paginate(_paginatePages());
 
-        return response()->json($data);
+        return OrderResource::collection($data);
     }
 
     public function store(OrderRequest $request)

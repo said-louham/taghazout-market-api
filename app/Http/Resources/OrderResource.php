@@ -26,8 +26,8 @@ class OrderResource extends JsonResource
             'coupon_discount' => $this->coupon_discount,
             'shipping_cost'   => $this->shipping_cost,
             'tax'             => $this->tax,
-            'category'        => $this->whenLoaded('category'),
-            'order_items'     => OrderItemResource::collection($this->whenLoaded('order_items')),
+            'user'            => $this->whenLoaded('user'),
+            'order_items'     => $this->whenLoaded('order_items'),
         ];
     }
 }
