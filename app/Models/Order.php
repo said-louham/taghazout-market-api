@@ -23,6 +23,7 @@ class Order extends Model
         'coupon_discount',
         'shipping_cost',
         'tax',
+        'coupon_id',
     ];
 
     protected $casts = [
@@ -58,5 +59,10 @@ class Order extends Model
     public function order_items(): BelongsToMany
     {
         return $this->belongsToMany(product::class, 'order_products', 'order_id', 'product_id');
+    }
+
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class, 'coupon_id');
     }
 }
