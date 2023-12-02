@@ -23,13 +23,10 @@ Route::delete('delete_image/{image_id}', [ProductController::class, 'delete_imag
 
 // * Handle order admin
 Route::apiResource('orderAdmin', AdminOrderController::class);
-//Route::get('order/{order_id}/SendEmail', [AdminOrderController::class, 'Send_email']);
+Route::get('order/{order_id}/SendEmail', [AdminOrderController::class, 'Send_email']);
 
 // * Handle users
 Route::get('users', [AuthController::class, 'index']);
-Route::get('users/{user}', [AuthController::class, 'show']);
-Route::patch('/users/update/{user}', [AuthController::class, 'update']);
-Route::delete('users/{user}', [AuthController::class, 'destroy']);
 
 // * Handle contact
 Route::post('contactMail', [AuthController::class, 'contactUs']);

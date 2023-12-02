@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
+    // TODO: refactor
     public function store(Request $request)
     {
         $request->validate([
