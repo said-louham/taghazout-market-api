@@ -59,14 +59,9 @@ class AuthController extends Controller
         if (! auth()->attempt($data)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $tokenName = config('APP_NAME', 'TOKEN_NAME');
+        $tokenName = config('app.APP_NAME', 'TOKEN_NAME');
         $expiresAt = app()->isLocal() ? now()->addYear() : now()->addDay();
         $token     = $request->user()->createToken($tokenName, ['*'], $expiresAt);
-        ds([
-            'token'    => $tokenName,
-            'APP_NAME' => config('APP_NAME'),
-
-        ]);
 
         return response()->json(['token' => $token->plainTextToken], 200);
     }
@@ -180,7 +175,8 @@ class AuthController extends Controller
 
         DB::beginTransaction();
 
-        $savedMessage = Message::create($data);
+        Message::create($data);
+
         Mail::to($data['email'])->send(new ContactUsMail($data['first_name'], $data['last_name']));
 
         DB::commit();

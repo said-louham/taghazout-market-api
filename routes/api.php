@@ -37,6 +37,4 @@ Route::apiResource('order', OrderController::class);
 
 // * Handle coupons
 Route::apiResource('coupon', CouponController::class);
-Route::post('applyCoupon', [CouponController::class, 'applyCoupon']);
-Route::post('validateCoupon', [CouponController::class, 'validateCoupon']);
-Route::delete('DeleteCoupon', [CouponController::class, 'DeleteCoupon']);
+Route::post('apply_coupon', [CouponController::class, 'applyCoupon']);
