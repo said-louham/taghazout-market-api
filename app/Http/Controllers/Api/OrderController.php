@@ -30,7 +30,8 @@ class OrderController extends Controller
                 'shipping_cost',
                 'tax',
             ])
-            ->withExists('user')
+            ->withExists('user:id')
+            ->withExists('coupon:id')
             ->with([
                 'order_items' => static function ($query) {
                     $query->select([

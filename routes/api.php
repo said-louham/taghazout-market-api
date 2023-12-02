@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\CopponController;
+use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SliderController;
@@ -36,7 +36,7 @@ Route::apiResource('slider', SliderController::class);
 Route::apiResource('order', OrderController::class);
 
 // * Handle coupons
-Route::apiResource('coupon', CopponController::class);
-Route::post('applyCoupon', [CopponController::class, 'applyCoupon']);
-Route::post('validateCoupon', [CopponController::class, 'validateCoupon']);
-Route::delete('DeleteCoupon', [CopponController::class, 'DeleteCoupon']);
+Route::apiResource('coupon', CouponController::class);
+Route::post('applyCoupon', [CouponController::class, 'applyCoupon']);
+Route::post('validateCoupon', [CouponController::class, 'validateCoupon']);
+Route::delete('DeleteCoupon', [CouponController::class, 'DeleteCoupon']);

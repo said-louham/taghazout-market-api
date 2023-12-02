@@ -9,9 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->after('payment_mode', static function () use ($table) {
-                $table->decimal('tax', 10, 2)->default(0.0);
-                $table->decimal('shipping_cost', 10, 2)->default(0.0);
+            $table->after('shipping_cost', static function () use ($table) {
+                $table->foreignId('coupon_id')->nullable()->constrained();
             });
         });
     }
@@ -19,7 +18,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn(['tax', 'shipping_cost', 'coupon_discount']);
+            $table->dropForeign(['coupon_id']);
+            $table->dropColumn('coupon_id');
         });
     }
 };
