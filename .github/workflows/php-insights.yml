@@ -44,7 +44,7 @@ jobs:
           files: |
             **.php
 
-   #   - name: Run PHP Insights
-    #    if: steps.changed-files.outputs.any_changed == 'true'
-    #    run: |
-     #     php artisan insights ${{ steps.changed-files.outputs.all_changed_files }} -n --ansi --format=github-action --min-quality=90 --min-complexity=60 --min-architecture=90 --min-style=90
+      - name: Run PHP Insights
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          php artisan insights ${{ steps.changed-files.outputs.all_changed_files }} -n --ansi --format=github-action --min-quality=90 --min-complexity=60 --min-architecture=90 --min-style=90
