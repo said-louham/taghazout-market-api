@@ -14,15 +14,14 @@ class ProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $phone  = $this->Profile ? $this->Profile->phone : '';
-        $adress = $this->Profile ? $this->Profile->adress : '';
-
+        $phone = $this->Profile ? $this->Profile->phone : "";
+        $adress = $this->Profile ? $this->Profile->adress : "";
         return [
-            'id'        => $this->id,
+            'id' => $this->id,
             'full_name' => $this->full_name,
-            'email'     => $this->email,
-            'phone'     => $phone,
-            'adress'    => $adress,
+            'email' => $this->email,
+            'phone' => $phone,
+            'adress' => $adress,
         ];
     }
 }

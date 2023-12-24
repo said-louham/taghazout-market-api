@@ -17,10 +17,13 @@ class OrderEmail extends Mailable implements ShouldQueue
      * Create a new message instance.
      */
     public $order;
-
+    public $subtotal;
+    public $total;
     public function __construct($order)
     {
         $this->order = $order;
+        $this->subtotal = $this->calculateSubtotal();
+        $this->total = $this->calculateTotal();
     }
 
     /**
@@ -31,6 +34,25 @@ class OrderEmail extends Mailable implements ShouldQueue
         return new Envelope(
             subject: 'Order Email',
         );
+    }
+    public function calculateSubtotal()
+    {
+        $subtotal = 0;
+
+        foreach ($this->order->orderItems as $orderItem) {
+            $subtotal += $orderItem->quantity * $orderItem->price;
+        }
+
+        return $subtotal;
+    }
+
+    public function calculateTotal()
+    {
+        $subtotal = $this->calculateSubtotal();
+        $couponValue = $this->order->coupon_discount;
+        $total = $subtotal - $couponValue;
+
+        return $total;
     }
 
     /**
@@ -52,7 +74,6 @@ class OrderEmail extends Mailable implements ShouldQueue
     {
         return [];
     }
-
     public function timeout(): int
     {
         return 60; // Set timeout to 60 seconds

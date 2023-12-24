@@ -15,18 +15,21 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'             => $this->id,
-            'tracking_nbr'   => $this->tracking_nbr,
-            'full_name'      => $this->full_name,
-            'email'          => $this->email,
-            'phone'          => $this->phone,
-            'address'        => $this->address,
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'tracking_no' => $this->tracking_no,
+            'full_name' => $this->full_name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'address' => $this->address,
             'status_message' => $this->status_message,
-            'payment_mode'   => $this->payment_mode,
-            'shipping_cost'  => $this->shipping_cost,
-            'tax'            => $this->tax,
-            'user'           => $this->whenLoaded('user'),
-            'order_items'    => $this->whenLoaded('order_items'),
+            'payment_mode' => $this->payment_mode,
+            'coupon_discount' => $this->coupon_discount,
+            'shipping_cost' => $this->shipping_cost,
+            'tax' => $this->tax,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'order_items' => OrderItemResource::collection($this->orderItems),
         ];
     }
 }

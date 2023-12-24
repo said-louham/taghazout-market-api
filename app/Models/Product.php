@@ -2,21 +2,15 @@
 
 namespace App\Models;
 
-use App\Enums\UploadCollectionEnum;
-use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Rating;
+use App\Models\Category;
+use App\Models\ProductImage;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Product extends Model implements HasMedia
+class Product extends Model
 {
-    use HasFactory,InteractsWithMedia,Sluggable;
-
+    use HasFactory;
     protected $fillable = [
         'category_id',
         'name',
@@ -27,51 +21,24 @@ class Product extends Model implements HasMedia
         'quantity',
         'trending',
         'featured',
+        'status',
     ];
-
-    protected $hidden = ['pivot'];
-
-    protected $casts = [
-        'trending'       => 'integer',
-        'featured'       => 'integer',
-        'original_price' => 'float',
-        'selling_price'  => 'float',
-    ];
-
-    public function registerMediaConversions(Media $media = null): void
-    {
-        $this
-            ->addMediaCollection(name: UploadCollectionEnum::PRODUCTS->value)
-            ->useDisk('s3')
-            ->singleFile();
-    }
-
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'name',
-            ],
-        ];
-    }
-
-    public function category(): BelongsTo
+    public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function ratings(): HasMany
-    {
-        return $this->hasMany(Rating::class, 'product_id', 'id');
-    }
 
-    public function user(): BelongsToMany
-    {
-        return $this->belongsToMany(Product::class, 'favorites', 'product_id', 'user_id');
-    }
+    public function ProductImages(){
+        return $this->hasMany(ProductImage::class,'product_id',"id");
+   }
+   
+    public function Ratings(){
+        return $this->hasMany(Rating::class,'product_id',"id");
+   }
 
-    public function order_items(): BelongsToMany
+    public function getRouteKeyName()
     {
-        return $this->belongsToMany(product::class, 'order_products', 'order_id', 'product_id');
+        return 'slug';
     }
 }

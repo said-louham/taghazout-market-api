@@ -1,12 +1,19 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\CouponController;
-use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\SliderController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\CopponController;
+use App\Http\Controllers\Api\SliderController;
+use App\Http\Controllers\Api\FavoritController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\RattingController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\admin\SettingController;
+use App\Http\Controllers\Api\admin\AdminOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,22 +26,70 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// * Handel Auth
-Route::post('login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+
+
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    // ----------------------------Profile-----------------------------------------------
+    Route::get('Profile', [AuthController::class, 'Profile']);
+    // ----------------------------LogOut------------------------------------------------
+    Route::delete('logout', [AuthController::class, 'logout']);
+    // ---------------------------- User Order-------------------------------------------
+    Route::resource('order', OrderController::class);
+    // ---------------------------- Favorite---------------------------------------------
+    Route::resource('favorit', FavoritController::class);
+    // ---------------------------- Cart-------------------------------------------------
+    Route::resource('cart', CartController::class);
+    Route::delete('/deleteCart', [CartController::class, 'destroyUserCart']);
+    // ---------------------------- Rating-----------------------------------------------
+    Route::resource('rating', RattingController::class);
+    Route::post('RateProduct/{product_id}', [RattingController::class, 'RateProduct']);
+    // --------------------Change Password-----------------------------------------------
+    Route::post('changePassword', [AuthController::class, 'changePassword']);
+});
+// ---------------------------- Authantification-------------------------------------
+Route::get('users', [AuthController::class, 'index']);
 Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+Route::get('users/{user}', [AuthController::class, 'show']);
+Route::patch('/users/update/{user}', [AuthController::class, 'update']);
+Route::delete('users/{user}', [AuthController::class, 'destroy']);
+Route::resource('userDetail', ProfileController::class);
+Route::post('contactMail', [AuthController::class, 'contactUs']);
 
-// * Handle categories
-Route::apiResource('category', CategoryController::class);
+// --------------------Forget Password-----------------------------------------------
+Route::post('reset', [AuthController::class, 'reset']);
+Route::post('forget', [AuthController::class, 'forget']);
 
-// * Handle products
-Route::apiResource('product', ProductController::class);
+// ---------------------------- Category-----------------------------------------------
+Route::resource('category', CategoryController::class);
 
-// * Handle sliders
-Route::apiResource('slider', SliderController::class);
 
-// * Handle  Order
-Route::apiResource('order', OrderController::class);
+// ---------------------------- Product------------------------------------------------
+Route::resource('product', ProductController::class);
+Route::patch('UpdateProductImage/{image_id}', [ProductController::class, 'UpdateProductImage']);
+Route::post('disroyImage/{image_id}', [ProductController::class, "disroyImage"]);
 
-// * Handle coupons
-Route::apiResource('coupon', CouponController::class);
-Route::post('apply_coupon', [CouponController::class, 'applyCoupon']);
+
+// ---------------------------- Admin Orders-------------------------------------------
+Route::resource('orderAdmin', AdminOrderController::class);
+Route::get('order/{order_id}/SendEmail', [AdminOrderController::class, "SendEmail"]);
+
+
+// ---------------------------- setting------------------------------------------------
+Route::resource('setting', SettingController::class);
+
+
+// ---------------------------- slider-------------------------------------------------
+Route::resource('slider', SliderController::class);
+
+
+// ---------------------------- Coupon-------------------------------------------------
+Route::resource('coupon', CopponController::class);
+Route::post('applyCoupon', [CopponController::class, "applyCoupon"]);
+Route::post('validateCoupon', [CopponController::class, "validateCoupon"]);
+Route::delete('DeleteCoupon', [CopponController::class, "DeleteCoupon"]);

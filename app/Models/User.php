@@ -3,37 +3,40 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use App\Models\Userdetail;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasRoles,Notifiable;
-
-    protected $fillable = [
-        'full_name',
-        'email',
-        'phone',
-        'address',
-        'password',
-    ];
-
-    public function profile(): HasOne
-    {
-        return $this->hasOne(Userdetail::class, 'user_id', 'id');
-    }
-
-    public function products(): BelongsToMany
-    {
-        return $this->belongsToMany(Product::class, 'favorites', 'user_id', 'product_id');
-    }
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+
+/**
+ * Get the user associated with the User
+ *
+ * @return \Illuminate\Database\Eloquent\Relations\HasOne
+ */
+protected $fillable = [
+    'full_name',
+    'email',
+    'phone',
+     'address',
+    'password',
+    'role',
+];
+
+public function Profile(){
+    return $this->hasOne(Userdetail::class, 'user_id', 'id');
+}
+/**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
