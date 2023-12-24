@@ -2,62 +2,129 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\CartRequest;
-use App\Http\Resources\CartResource;
 use App\Models\Cart;
-use App\Models\Category;
-use Illuminate\Support\Facades\DB;
-use Spatie\QueryBuilder\QueryBuilder;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\CartResource;
 
 class CartController extends Controller
 {
+
     public function index()
     {
-        $data = QueryBuilder::for(Category::class)
-            ->select([
-                'user_id',
-                'product_id',
-                'quantity',
-            ])
-            ->where('user_id', auth()->id())
-            ->with((
-                'product:id,name,selling_price'
-            ));
-
-        return CartResource::collection($data->get());
+        $cartItems = Cart::where('user_id', auth()->id())->with('product')->get();
+        return CartResource::collection($cartItems);
     }
 
-    public function store(CartRequest $request)
+    public function store(Request $request)
     {
-        $data   = $request->validated();
+        $cartItems = $request->input('cartItems');
         $userId = auth()->id();
 
-        collect($data['items'])->each(function ($item) use ($userId) {
-            $productId = $item['product_id'];
-            $quantity  = $item['quantity'];
+        $userCart = Cart::where('user_id', $userId)->get();
 
-            Cart::updateOrCreate(
-                ['user_id' => $userId, 'product_id' => $productId],
-                ['quantity' => DB::raw("quantity + $quantity")]
-            );
+        if ($userCart->isEmpty()) {
+            foreach ($cartItems as $cartItem) {
+                $productId = $cartItem['product_id'];
+                $quantity = $cartItem['quantity'];
+
+                $cartItem = new Cart([
+                    'user_id' => $userId,
+                    'product_id' => $productId,
+                    'quantity' => $quantity,
+                ]);
+                $userCart->push($cartItem);
+            }
+        } else {
+            foreach ($cartItems as $cartItem) {
+                $productId = $cartItem['product_id'];
+                $quantity = $cartItem['quantity'];
+                $existingCartItem = $userCart->where('product_id', $productId)->first();
+
+                if ($existingCartItem) {
+                    $existingCartItem->quantity += $quantity;
+                    $existingCartItem->save();
+                } else {
+                    $cartItem = new Cart([
+                        'user_id' => $userId,
+                        'product_id' => $productId,
+                        'quantity' => $quantity,
+                    ]);
+                    $userCart->push($cartItem);
+                }
+            }
+        }
+
+        $userCart->each(function ($cartItem) {
+            $cartItem->save();
         });
+
+        return CartResource::collection($userCart);
     }
 
-    public function update(CartRequest $request, Cart $cart)
+
+    public function update(Request $request, string $id)
     {
-        $data = $request->validated() + auth()->id();
+        $quantity = $request->input('quantity', 1);
 
-        $cart->updateOrFail($data);
+        $cartItem = Cart::where('user_id', auth()->id())
+            ->where('id', $id)
+            ->first();
 
-        return response()->json(true);
+        if (!$cartItem) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cart item not found',
+            ]);
+        }
+
+        $cartItem->quantity = $quantity;
+        $cartItem->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Cart updated',
+            'data' => $cartItem,
+        ]);
     }
 
-    public function destroy(Cart $cart)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
     {
+        $cartItem = Cart::where('user_id', auth()->id())
+            ->where('id', $id)
+            ->first();
 
-        $cart->delete();
+        if (!$cartItem) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Cart item not found',
+            ]);
+        }
 
-        return response()->json(true);
+        $cartItem->delete();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Product removed from cart',
+        ]);
+    }
+    public function destroyUserCart()
+    {
+        $userCart = Cart::where('user_id', auth()->id())->get();
+
+        if (count($userCart) != 0) {
+            foreach ($userCart as $cartItem) {
+                $cartItem->delete();
+            }
+        }
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Cart deleted successfully',
+        ]);
     }
 }

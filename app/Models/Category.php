@@ -2,44 +2,23 @@
 
 namespace App\Models;
 
-use App\Enums\UploadCollectionEnum;
-use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Category extends Model implements HasMedia
+class Category extends Model
 {
-    use HasFactory,InteractsWithMedia,Sluggable;
-
+    use HasFactory;
     protected $fillable = [
         'name',
         'slug',
         'description',
+        'image',
+        'status',
     ];
-
-    public function registerMediaConversions(Media $media = null): void
+ public function products()
     {
-        $this
-            ->addMediaCollection(name: UploadCollectionEnum::CATEGORIES->value)
-            ->useDisk('s3')
-            ->singleFile();
+        return $this->hasMany(Product::class,'category_id','id');  
     }
 
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'name',
-            ],
-        ];
-    }
-
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class, 'category_id', 'id');
-    }
 }

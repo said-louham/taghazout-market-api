@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'website_name',
         'website_url',
-        'address',
+        'adress',
         'phone',
         'email',
         'facebook',
         'instagram',
+        'twitter',
+        'linkden',
     ];
 }

@@ -2,123 +2,161 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\UploadCollectionEnum;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\CategoryRequest;
-use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use App\Services\UploadService;
-use Illuminate\Support\Facades\DB;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+
 
 class CategoryController extends Controller
 {
+
+    public $baseurl="http://127.0.0.1:8000/";
+
     public function index()
     {
-        $data = QueryBuilder::for(Category::class)
-            ->select([
-                'id',
-                'name',
-                'slug',
-                'description',
-            ])
-            ->paginate(_paginatePages());
-
-        return CategoryResource::collection($data);
+        $categories = Category::latest()->get();
+        return response()->json([
+            'categories' => $categories,
+        ]);
     }
 
-    public function store(CategoryRequest $request)
+
+    public function store(Request $request)
     {
-        DB::beginTransaction();
 
-        $data = $request->validated();
 
-        $category = Category::create($data);
+        $validatedData = Validator::make($request->all(), 
+        [
+            'name' => 'required',
+            'description' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'status' => 'required',
+        ]);
 
-        collect($data['files'])->whereNotNull('file')->each(function ($file) use ($category) {
-            $category->addMedia($file['file'])->usingFileName($file['file']->hashName())->toMediaCollection(UploadCollectionEnum::CATEGORIES->value);
-        });
 
-        DB::commit();
-
-        return response()->json($category);
-    }
-
-    public function show(Category $category)
-    {
-        return response()->json($category);
-    }
-
-    public function update(CategoryRequest $request, Category $category)
-    {
-        $data = $request->validated();
-
-        DB::beginTransaction();
-
-        $category->updateOrFail(collect($data)->except(['files'])->toArray());
-
-        $modelMedia = UploadService::getMedia(mediaModel: $category, collection: UploadCollectionEnum::CATEGORIES->value)->pluck('uuid')->toArray();
-
-        $deletedMedia = collect($data['files'])->whereNotNull('file')->each(static function ($file, $key) use ($request, $category, $modelMedia) {
-
-            if ($request->hasFile('files.' . $key . '.file')) {
-                $category->addMedia($file['file'])->usingFileName($file['file']->hashName())->toMediaCollection(UploadCollectionEnum::PRODUCTS->value);
-            } elseif (isset($file['media_uuid'])) {
-                $itemKey = array_search($file['media_uuid'], $modelMedia);
-
-                if ($itemKey !== false) {
-                    unset($modelMedia[$itemKey]);
-                }
-            }
-        })->flatten()->toArray();
-        // TODO: refactore the deletedMedia array
-        if (! is_null($deletedMedia)) {
-            Media::whereIn('uuid', $deletedMedia)->delete();
+        if($validatedData->fails()){
+            return response()->json([
+                'message' => 'validation error',
+                'error' => $validatedData->errors()
+            ]);
         }
 
-        DB::commit();
+        $category = new Category();
+        $category->name = $request->name;
+        $category->status = $request->status;
+        $category->description = $request->description;
 
-        return response()->json(true);
+
+        $slug=Str::slug($request->input('name'));
+        $counter=1;
+        while(Category::whereSlug($slug)->exists()){
+            $slug=$slug.'-'.$counter;
+            $counter++;
+        }
+        
+        $category->slug = $slug;
+
+        if($request->hasFile('image')) {
+                $imageName = time().'.'. $request->image->extension();
+                $imageName=$this->baseurl.'category/'.$imageName;
+                $request->image->move(public_path('category'), $imageName);
+                $category->image=$imageName;
+        }
+        $category->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category added successfully!',
+            'data' => $category
+        ], 201);
+
     }
 
-    public function update2(CategoryRequest $request, Category $category)
+   
+    public function show(string $id)
     {
-        DB::beginTransaction();
-
-        $data       = $request->validated();
-        $modelMedia = UploadService::getMedia(mediaModel: $category, collection: UploadCollectionEnum::CATEGORIES->value)->pluck('uuid')->toArray();
-
-        foreach ($data['files'] as $key => $file) {
-            if ($request->hasFile('files.' . $key . '.file')) {
-                $category->addMedia($file['file'])->usingFileName($file['file']->hashName())->toMediaCollection(UploadCollectionEnum::PRODUCTS->value);
-            } elseif (isset($file['media_uuid'])) {
-                $itemKey = array_search($file['media_uuid'], $modelMedia);
-
-                if ($itemKey !== false) {
-                    unset($modelMedia[$itemKey]);
-                }
-            }
+        $category = Category::find($id);
+        if (!$category) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Category not found'
+            ]);
         }
 
-        $deletedMedia = array_filter($modelMedia, function ($media) use ($deletedMedia) {
-            return ! in_array($media, $deletedMedia);
-        });
-
-        if (! is_null($deletedMedia)) {
-            Media::whereIn('uuid', $deletedMedia)->delete();
-        }
-
-        DB::commit();
-
-        return response()->json(true);
+        return response()->json([
+            'success' => true,
+            'category' => $category
+        ]);
     }
 
-    public function destroy(Category $category)
+
+
+    public function update(Request $request, string $id)
     {
+      
+        $category = Category::find($id);
+
+
+        if (!$category) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Category not found!',
+            ]);
+        }
+        $category->name = $request->name;
+        $category->status = $request->status;
+        $category->description = $request->description;
+
+        $slug = Str::slug($request->input('name'));
+        $counter = 1;
+        while(Category::whereSlug($slug)->where('id', '!=', $id)->exists()){
+            $slug = $slug.'-'.$counter;
+            $counter++;
+        }
+        $category->slug = $slug;
+
+
+        if($request->hasFile('image')) {
+            $imageName = time().'.'. $request->image->extension();
+            $imageName=$this->baseurl.'category/'.$imageName;
+            $request->image->move(public_path('category'), $imageName);
+            $category->image = $imageName;
+        }
+
+        $category->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category updated successfully!',
+            'data' => $category
+        ], 200);
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $category = Category::find($id);
+        if (!$category) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Category not found',
+                
+            ]);
+        }
+        if (file_exists(public_path('category').'/'. basename($category->image))){
+            unlink(public_path('category').'/'.basename($category->image));
+        }  
         $category->delete();
-        $category->products()->delete();
 
-        return response()->json($category);
+        return response()->json([
+            'success' => true,
+            'message' => 'Category deleted successfully!',
+            'data'=>$category
+        ]);
     }
 }

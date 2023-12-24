@@ -8,12 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class PasswordResetToken extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
+    protected $fillable=[
         'email',
-        'token',
+        'token'
     ];
-
     public $timestamps = false;
 
     protected $table = 'password_reset_tokens';
