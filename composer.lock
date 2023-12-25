@@ -3415,22 +3415,20 @@
         },
         {
             "name": "spatie/image",
-            "version": "3.1.0",
+            "version": "3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/image.git",
-                "reference": "d029e0eafd747d22b2b4c4867d4524a14d15536e"
+                "reference": "7a5b1a7f7fd8e69cb901eb2a0af8848d6eea991d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/image/zipball/d029e0eafd747d22b2b4c4867d4524a14d15536e",
-                "reference": "d029e0eafd747d22b2b4c4867d4524a14d15536e",
+                "url": "https://api.github.com/repos/spatie/image/zipball/7a5b1a7f7fd8e69cb901eb2a0af8848d6eea991d",
+                "reference": "7a5b1a7f7fd8e69cb901eb2a0af8848d6eea991d",
                 "shasum": ""
             },
             "require": {
                 "ext-exif": "*",
-                "ext-gd": "*",
-                "ext-imagick": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
                 "php": "^8.2",
@@ -3439,6 +3437,8 @@
                 "symfony/process": "^6.4|^7.0"
             },
             "require-dev": {
+                "ext-gd": "*",
+                "ext-imagick": "*",
                 "pestphp/pest": "^2.28",
                 "phpstan/phpstan": "^1.10.50",
                 "spatie/pest-plugin-snapshots": "^2.1",
@@ -3471,7 +3471,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/image/tree/3.1.0"
+                "source": "https://github.com/spatie/image/tree/3.3.2"
             },
             "funding": [
                 {
@@ -3483,7 +3483,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-12-15T14:30:34+00:00"
+            "time": "2023-12-24T08:42:37+00:00"
         },
         {
             "name": "spatie/image-optimizer",
@@ -3542,16 +3542,16 @@
         },
         {
             "name": "spatie/laravel-medialibrary",
-            "version": "11.0.0",
+            "version": "11.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-medialibrary.git",
-                "reference": "a1823c02936d53ac441471cc57298e30d5908bbf"
+                "reference": "9eab494a7b62ba5f0ba74b7d25e2f82a4f3b201c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/a1823c02936d53ac441471cc57298e30d5908bbf",
-                "reference": "a1823c02936d53ac441471cc57298e30d5908bbf",
+                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/9eab494a7b62ba5f0ba74b7d25e2f82a4f3b201c",
+                "reference": "9eab494a7b62ba5f0ba74b7d25e2f82a4f3b201c",
                 "shasum": ""
             },
             "require": {
@@ -3566,7 +3566,7 @@
                 "illuminate/support": "^10.0",
                 "maennchen/zipstream-php": "^3.1",
                 "php": "^8.2",
-                "spatie/image": "^3.0",
+                "spatie/image": "^3.3.2",
                 "spatie/laravel-package-tools": "^1.16.1",
                 "spatie/temporary-directory": "^2.2",
                 "symfony/console": "^6.4.1|^7.0"
@@ -3635,7 +3635,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-medialibrary/issues",
-                "source": "https://github.com/spatie/laravel-medialibrary/tree/11.0.0"
+                "source": "https://github.com/spatie/laravel-medialibrary/tree/11.0.3"
             },
             "funding": [
                 {
@@ -3647,7 +3647,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-12-14T14:18:03+00:00"
+            "time": "2023-12-24T08:49:52+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
