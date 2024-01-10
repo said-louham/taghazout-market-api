@@ -20,7 +20,6 @@ class SliderController extends Controller
 
     }
 
-
     public function store(Request $request)
     {
         $validateSlider = Validator::make($request->all(), [
