@@ -58,7 +58,7 @@ class CategoryController extends Controller
 
         if($request->hasFile('image')) {
                 $imageName = time().'.'. $request->image->extension();
-                $imageName=url('/').'category/'.$imageName;
+                $imageName=url('/').'/category/'.$imageName;
                 $request->image->move(public_path('category'), $imageName);
                 $category->image=$imageName;
         }
@@ -118,7 +118,7 @@ class CategoryController extends Controller
 
         if($request->hasFile('image')) {
             $imageName = time().'.'. $request->image->extension();
-            $imageName=url('/').'category/'.$imageName;
+            $imageName=url('/').'/category/'.$imageName;
             $request->image->move(public_path('category'), $imageName);
             $category->image = $imageName;
         }

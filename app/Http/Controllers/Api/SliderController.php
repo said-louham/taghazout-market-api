@@ -39,7 +39,7 @@ class SliderController extends Controller
             $extension = $file->getClientOriginalExtension();
             $imageName = time() .'.' . $extension;
             $file->move(public_path('Sliders'), $imageName);
-          $ImageNamedata = url('/').'Sliders/'. $imageName;
+          $ImageNamedata = url('/').'/Sliders/'. $imageName;
         }
 
 
@@ -74,7 +74,7 @@ class SliderController extends Controller
           if (file_exists(public_path('Sliders/').basename($slider->image))){
                unlink(public_path('Sliders').'/'.basename($slider->image));
            }
-           $slider->image=url('/').'Sliders/'.$imageName;
+           $slider->image=url('/').'/Sliders/'.$imageName;
        }
        $validatedData['status'] = $request->status ==true? 1:0;
        $slider->update([

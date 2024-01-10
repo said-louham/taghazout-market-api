@@ -77,7 +77,7 @@ class ProductController extends Controller
                 $extension = $imageFile->getClientOriginalExtension();
                 $imageName = time() . $key . '.' . $extension;
                 $imageFile->move(public_path('products'), $imageName);
-                $finalImagePathName = url('/') . 'products/' . $imageName;
+                $finalImagePathName = url('/') . '/products/' . $imageName;
 
                 $product->ProductImages()->create([
                     'image' => $finalImagePathName
@@ -159,7 +159,7 @@ class ProductController extends Controller
                 $extension = $imageFile->getClientOriginalExtension();
                 $imageName = time() .$key.'.' . $extension;
                 $imageFile->move(public_path('products'), $imageName);
-                $finalImagePathName = url('/') . 'products/' . $imageName;
+                $finalImagePathName = url('/') . '/products/' . $imageName;
 
                 $productImage = new ProductImage;
                 $productImage->product_id = $product->id;
