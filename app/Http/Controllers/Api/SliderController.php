@@ -13,12 +13,11 @@ class SliderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public $baseurl="http://127.0.0.1:8000/";
-    public function index()
+       public function index()
     {
         $sliders=Slider::latest()->get();
         return response()->json($sliders);
-        
+
     }
 
 
@@ -41,7 +40,7 @@ class SliderController extends Controller
             $extension = $file->getClientOriginalExtension();
             $imageName = time() .'.' . $extension;
             $file->move(public_path('Sliders'), $imageName);
-          $ImageNamedata = $this->baseurl.'Sliders/'. $imageName;
+          $ImageNamedata = url('/').'Sliders/'. $imageName;
         }
 
 
@@ -60,7 +59,7 @@ class SliderController extends Controller
 
 
 
- 
+
 
     /**
      * Update the specified resource in storage.
@@ -72,11 +71,11 @@ class SliderController extends Controller
            $file=$request->image;
            $imageName=time().'_'.$file->getClientOriginalName();
            $file->move(public_path('Sliders'),$imageName);
-    
+
           if (file_exists(public_path('Sliders/').basename($slider->image))){
                unlink(public_path('Sliders').'/'.basename($slider->image));
-           }       
-           $slider->image=$this->baseurl.'Sliders/'.$imageName;
+           }
+           $slider->image=url('/').'Sliders/'.$imageName;
        }
        $validatedData['status'] = $request->status ==true? 1:0;
        $slider->update([
@@ -98,6 +97,6 @@ class SliderController extends Controller
             'status' => true,
             'data'=>$slider
             ], 200);
-        
+
     }
 }

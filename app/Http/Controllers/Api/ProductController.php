@@ -17,7 +17,7 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public $baseurl = "http://127.0.0.1:8000/";
+
     public function index()
     {
         $products = Product::with('Ratings')->latest()->get();
@@ -77,7 +77,7 @@ class ProductController extends Controller
                 $extension = $imageFile->getClientOriginalExtension();
                 $imageName = time() . $key . '.' . $extension;
                 $imageFile->move(public_path('products'), $imageName);
-                $finalImagePathName = $this->baseurl . 'products/' . $imageName;
+                $finalImagePathName = url('/') . 'products/' . $imageName;
 
                 $product->ProductImages()->create([
                     'image' => $finalImagePathName
@@ -137,7 +137,7 @@ class ProductController extends Controller
                 ]);
             }
         }
-        
+
         $product->name = $request->input('name', $product->name);
         $product->slug = $request->input('slug', $product->slug);
         $product->description = $request->input('description', $product->description);
@@ -159,7 +159,7 @@ class ProductController extends Controller
                 $extension = $imageFile->getClientOriginalExtension();
                 $imageName = time() .$key.'.' . $extension;
                 $imageFile->move(public_path('products'), $imageName);
-                $finalImagePathName = $this->baseurl . 'products/' . $imageName;
+                $finalImagePathName = url('/') . 'products/' . $imageName;
 
                 $productImage = new ProductImage;
                 $productImage->product_id = $product->id;
@@ -202,32 +202,32 @@ class ProductController extends Controller
     }
 
 
-        
+
     public function updateProductImage(Request $request, $imageId) {
         $productImage = ProductImage::find($imageId);
-    
+
         if (!$productImage) {
             return response()->json([
                 'status' => false,
                 'message' => 'Product image not found'
             ], 404);
         }
-    
+
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-    
+
             if (!$image->isValid()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Invalid image file'
                 ], 400);
             }
-    
-   
+
+
             $extension = $request->file('image')->getClientOriginalExtension();
             $imageName = time(). '.' . $extension;
             $request->file('image')->move(public_path('products'), $imageName);
-            $finalImagePathName = $this->baseurl.'products/'. $imageName;
+            $finalImagePathName = url('/').'products/'. $imageName;
             $productImage->update([
                 "image"=> $finalImagePathName,
             ]);

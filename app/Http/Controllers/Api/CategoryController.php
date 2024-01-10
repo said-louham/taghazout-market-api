@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class CategoryController extends Controller
 {
 
-    public $baseurl="http://127.0.0.1:8000/";
-
-    public function index()
+      public function index()
     {
         $categories = Category::latest()->get();
         return response()->json([
@@ -27,7 +25,7 @@ class CategoryController extends Controller
     {
 
 
-        $validatedData = Validator::make($request->all(), 
+        $validatedData = Validator::make($request->all(),
         [
             'name' => 'required',
             'description' => 'required',
@@ -55,12 +53,12 @@ class CategoryController extends Controller
             $slug=$slug.'-'.$counter;
             $counter++;
         }
-        
+
         $category->slug = $slug;
 
         if($request->hasFile('image')) {
                 $imageName = time().'.'. $request->image->extension();
-                $imageName=$this->baseurl.'category/'.$imageName;
+                $imageName=url('/').'category/'.$imageName;
                 $request->image->move(public_path('category'), $imageName);
                 $category->image=$imageName;
         }
@@ -74,7 +72,7 @@ class CategoryController extends Controller
 
     }
 
-   
+
     public function show(string $id)
     {
         $category = Category::find($id);
@@ -95,7 +93,7 @@ class CategoryController extends Controller
 
     public function update(Request $request, string $id)
     {
-      
+
         $category = Category::find($id);
 
 
@@ -120,7 +118,7 @@ class CategoryController extends Controller
 
         if($request->hasFile('image')) {
             $imageName = time().'.'. $request->image->extension();
-            $imageName=$this->baseurl.'category/'.$imageName;
+            $imageName=url('/').'category/'.$imageName;
             $request->image->move(public_path('category'), $imageName);
             $category->image = $imageName;
         }
@@ -145,12 +143,12 @@ class CategoryController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Category not found',
-                
+
             ]);
         }
         if (file_exists(public_path('category').'/'. basename($category->image))){
             unlink(public_path('category').'/'.basename($category->image));
-        }  
+        }
         $category->delete();
 
         return response()->json([
